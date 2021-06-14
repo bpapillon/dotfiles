@@ -1,1 +1,62 @@
-/Users/benpapillon/Dropbox/dot/.gitconfig
+[user]
+  name = Ben Papillon
+  email = benpapillon@gmail.com
+[push]
+  default = matching
+[mergetool]
+  keepBackup = true
+[core]
+  editor = vim
+  excludesfile = ~/.gitignore_global
+[web]
+  browser = google-chrome
+[color "branch"]
+  current = yellow bold
+  local = green bold
+  remote = cyan bold
+[color "diff"]
+  meta = yellow bold
+  frag = magenta bold
+  old = red bold
+  new = green bold
+  whitespace = red reverse
+[color "status"]
+  added = green bold
+  changed = yellow bold
+  untracked = red bold
+[alias]
+  a = add
+  aa = add .
+  b = branch
+  bc = branch -r --contains
+  bd = branch -d
+  bl = blame
+  br = branch -r
+  c = commit
+  ca = commit -a
+  cam = commit -am
+  cb = checkout -b
+  cd = commit --amend
+  ch = cherry -v
+  cm = commit -m
+  co = checkout
+  cp = cherry-pick
+  d = diff
+  f = fetch
+  l = log --graph --oneline
+  m = merge --no-ff
+  p = pull
+  ps = push -u origin HEAD
+  rb = rebase
+  recent = branch --sort=-committerdate --format="%(committerdate:relative)%09%(refname:short)"
+  rh = reset HEAD
+  rsh = reset --soft HEAD~1
+  s = status .
+  sh = show
+  st = stash
+  std = stash drop
+  stl = stash list
+  stp = stash pop
+  tags = tag -l
+  undo = reset HEAD~
+  yps = push -u origin HEAD
