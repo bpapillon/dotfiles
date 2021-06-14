@@ -4,12 +4,12 @@ export EDITOR=vim
 export PATH=/Applications/Postgres.app/Contents/Versions/10/bin:/opt/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/sbin:~/Library/Python/2.7/bin:~/Library/Python/3.7/bin/:/usr/local/include/:/usr/local/go/bin:/Users/bpapillon/go/bin
 
 alias bx='bundle exec'
+alias config='/usr/bin/git --git-dir=/Users/bpapillon/.cfg/ --work-tree=/Users/bpapillon'
 alias dc='docker-compose'
 alias gitpylint='git status --porcelain | sed s/^...// | xargs pylint'
 alias ll='ls -al'
 alias rmpyc='find . -name "*.pyc" -delete'
 alias ssh_forward='eval $(ssh-agent) && ssh-add ~/.ssh/id_rsa'
-alias config='/usr/bin/git --git-dir=/Users/bpapillon/.cfg/ --work-tree=/Users/bpapillon'
 
 # History
 export HISTCONTROL=ignoreboth
@@ -32,28 +32,18 @@ parse_git_branch() {
 # Silence warning to change to zsh
 export BASH_SILENCE_DEPRECATION_WARNING=1
 
-# pyenv
-if command -v pyenv 1>/dev/null 2>&1; then
-  eval "$(pyenv init -)"
-fi
-PATH=$(pyenv root)/shims:$PATH
-
-# Setting PATH for Python 2.7
-# The original version is saved in .bash_profile.pysave
-#PATH="/Library/Frameworks/Python.framework/Versions/2.7/bin:${PATH}"
-#export PATH
-#export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"
-
-# rbenv
-eval "$(rbenv init -)"
-
 # nvm
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-# silly stuff
-alias yar='say "walk the plank rapscallion" && yarn'
+# pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init --path)"
+
+# rbenv
+eval "$(rbenv init -)"
 
 ### Notes
 note() {
