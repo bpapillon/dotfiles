@@ -1,0 +1,10 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =8
+let g:netrw_dirhist_1='/Users/bpapillon/projects/matcha-app/lib/tasks/aspen_grove'
+let g:netrw_dirhist_2='/Users/bpapillon/projects/matcha-app/spec/tasks'
+let g:netrw_dirhist_3='/Users/bpapillon/.subversion'
+let g:netrw_dirhist_4='/Users/bpapillon/.subversion/auth'
+let g:netrw_dirhist_5='/Users/bpapillon/.subversion/auth/svn.username'
+let g:netrw_dirhist_6='/Users/bpapillon/projects/pointyhair'
+let g:netrw_dirhist_7='/Users/bpapillon/projects/scratch'
+let g:netrw_dirhist_8='/Users/bpapillon/projects/chef'

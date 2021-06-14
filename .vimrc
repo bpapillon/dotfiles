@@ -1,1 +1,79 @@
-/Users/benpapillon/Dropbox/dot/.vimrc
+" plugins (vundle)
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+  Plugin 'VundleVim/Vundle.vim'
+
+  Plugin 'tpope/vim-commentary'
+  Plugin 'tpope/vim-fugitive' " git
+  Plugin 'vim-airline/vim-airline'
+  Plugin 'vim-airline/vim-airline-themes'
+  Plugin 'w0rp/ale' " linting
+
+  " Language support
+  Plugin 'https://github.com/chrisbra/csv.vim'
+  Plugin 'https://github.com/lifepillar/pgsql.vim'
+  Plugin 'https://github.com/mxw/vim-jsx'
+  Plugin 'https://github.com/pangloss/vim-javascript'
+  Plugin 'https://github.com/vim-ruby/vim-ruby'
+  Plugin 'leafgarland/typescript-vim'
+  Plugin 'thoughtbot/vim-rspec'
+call vundle#end()
+
+" colors
+syntax enable " syntax highlighting
+colorscheme badwolf
+
+" file types
+filetype plugin indent on
+
+" editing & indentation
+set autoindent
+set backspace=indent,eol,start " backspace key works in edit mode
+set tabstop=2
+set softtabstop=0
+set shiftwidth=2
+set smarttab
+set expandtab " fill tabs with spaces
+
+" UI
+set laststatus=2
+set lazyredraw " redraw only when we need to.
+set number " line numbers
+set relativenumber " relative line numbers
+set ruler " show cursor position
+set showmatch " highlight matching brackets and parens
+set visualbell " use visual bell instead of audio
+set wildmenu " visual autocomplete for command menu
+
+" clipboard
+set clipboard=unnamed
+set pastetoggle=<Leader>p
+
+" search
+set hlsearch " highlight search results
+set ignorecase " case insensitive search
+set incsearch " incremental search
+set smartcase " unless capital letters
+nnoremap <Leader><space> :nohlsearch<CR>
+
+" ===== Instead of backing up files, just reload the buffer when it changes. =====
+" The buffer is an in-memory representation of a file, it's what you edit
+set autoread                         " Auto-reload buffers when file changed on disk
+set nobackup                         " Don't use backup files
+set nowritebackup                    " Don't backup the file while editing
+set noswapfile                       " Don't create swapfiles for new buffers
+set updatecount=0                    " Don't try to write swapfiles after some number of updates
+set backupskip=/tmp/*,/private/tmp/* " Let me edit crontab files
+
+" automatic commands
+if has('autocmd')
+  " delete trailing whitespace
+  autocmd BufWritePre * :%s/\s\+$//ge
+endif
+
+" RSpec.vim mappings
+let g:rspec_command = "!bundle exec rspec {spec}"
+map <Leader>t :call RunCurrentSpecFile()<CR>
+map <Leader>s :call RunNearestSpec()<CR>
+map <Leader>l :call RunLastSpec()<CR>
+map <Leader>a :call RunAllSpecs()<CR>
