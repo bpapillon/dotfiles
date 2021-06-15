@@ -24,11 +24,6 @@ parse_git_branch() {
     git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
 }
 
-# Disabling Mac OS animations (reference)
-# defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool false
-# defaults write NSGlobalDomain NSWindowResizeTime -float 0.001
-# defaults write -g QLPanelAnimationDuration -float 0
-
 # Silence warning to change to zsh
 export BASH_SILENCE_DEPRECATION_WARNING=1
 
