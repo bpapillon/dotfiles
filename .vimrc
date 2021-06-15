@@ -14,6 +14,7 @@ call vundle#begin()
   Plugin 'https://github.com/lifepillar/pgsql.vim'
   Plugin 'https://github.com/mxw/vim-jsx'
   Plugin 'https://github.com/pangloss/vim-javascript'
+  Plugin 'https://github.com/tpope/vim-markdown'
   Plugin 'https://github.com/vim-ruby/vim-ruby'
   Plugin 'leafgarland/typescript-vim'
   Plugin 'thoughtbot/vim-rspec'
