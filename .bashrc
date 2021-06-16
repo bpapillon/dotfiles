@@ -5,6 +5,7 @@ parse_git_branch() {
 }
 
 # PATH & misc exports
+export BASH_SILENCE_DEPRECATION_WARNING=1 # Silence warning to change to zsh
 export EDITOR=vim
 export PATH=/Applications/Postgres.app/Contents/Versions/10/bin:/opt/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/sbin:~/Library/Python/2.7/bin:~/Library/Python/3.7/bin/:/usr/local/include/:/usr/local/go/bin:/Users/bpapillon/go/bin
 
@@ -26,8 +27,17 @@ if [ -f ~/.git-completion.bash ]; then
   . ~/.git-completion.bash
 fi
 
-# Silence warning to change to zsh
-export BASH_SILENCE_DEPRECATION_WARNING=1
+# print only column x of output
+# stolen from https://bitbucket.org/durdn/cfg/src/master/.bashrc
+function col {
+  awk -v col=$1 '{print $col}'
+}
+
+# global search and replace OSX
+# stolen from https://bitbucket.org/durdn/cfg/src/master/.bashrc
+function sr {
+    find . -type f -exec sed -i '' s/$1/$2/g {} +
+}
 
 # nvm
 export NVM_DIR="$HOME/.nvm"
