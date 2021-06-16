@@ -4,20 +4,22 @@ call vundle#begin()
   Plugin 'VundleVim/Vundle.vim'
 
   Plugin 'tpope/vim-commentary'
-  Plugin 'tpope/vim-fugitive' " git
+  Plugin 'tpope/vim-fugitive'
+  Plugin 'tpope/vim-surround'
   Plugin 'vim-airline/vim-airline'
   Plugin 'vim-airline/vim-airline-themes'
-  Plugin 'w0rp/ale' " linting
+  Plugin 'w0rp/ale'
 
   " Language support
-  Plugin 'https://github.com/chrisbra/csv.vim'
-  Plugin 'https://github.com/lifepillar/pgsql.vim'
-  Plugin 'https://github.com/mxw/vim-jsx'
-  Plugin 'https://github.com/pangloss/vim-javascript'
-  Plugin 'https://github.com/tpope/vim-markdown'
-  Plugin 'https://github.com/vim-ruby/vim-ruby'
+  Plugin 'chrisbra/csv.vim'
+  Plugin 'fatih/vim-go'
   Plugin 'leafgarland/typescript-vim'
+  Plugin 'lifepillar/pgsql.vim'
+  Plugin 'mxw/vim-jsx'
+  Plugin 'pangloss/vim-javascript'
   Plugin 'thoughtbot/vim-rspec'
+  Plugin 'tpope/vim-markdown'
+  Plugin 'vim-ruby/vim-ruby'
 call vundle#end()
 
 " colors
