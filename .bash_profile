@@ -1,8 +1,14 @@
+# PS1
 PS1='^\e[0;35m\W\e[m\e[0;36m$(parse_git_branch)\e[m\$ '
+parse_git_branch() {
+    git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+}
 
+# PATH & misc exports
 export EDITOR=vim
 export PATH=/Applications/Postgres.app/Contents/Versions/10/bin:/opt/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/sbin:~/Library/Python/2.7/bin:~/Library/Python/3.7/bin/:/usr/local/include/:/usr/local/go/bin:/Users/bpapillon/go/bin
 
+# Aliases
 alias bx='bundle exec'
 alias config='/usr/bin/git --git-dir=/Users/bpapillon/.cfg/ --work-tree=/Users/bpapillon'
 alias dc='docker-compose'
@@ -20,10 +26,6 @@ if [ -f ~/.git-completion.bash ]; then
   . ~/.git-completion.bash
 fi
 
-parse_git_branch() {
-    git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
-}
-
 # Silence warning to change to zsh
 export BASH_SILENCE_DEPRECATION_WARNING=1
 
@@ -40,7 +42,7 @@ eval "$(pyenv init --path)"
 # rbenv
 eval "$(rbenv init -)"
 
-### Notes
+# Notes
 note() {
   vim ~/notes/$(date +%Y%m%d)-$1.txt
 }
