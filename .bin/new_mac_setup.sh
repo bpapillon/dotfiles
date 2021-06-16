@@ -1,23 +1,30 @@
 #!/bin/bash
 
-read -p "Install & setup 1Password and then press enter to continue..."
+echo "Setting bash as default shell..."
+chsh -s /bin/bash
+source ~/.bashrc
 
 echo "Checking git and xcode installation..."
 git --version # Will prompt for xcode tools setup if needed
 
-read -p "Set up a new SSH key, add it to GitHub, then press enter to continue..."
+if [[ ! -d ~/.ssh/ ]]; then
+  echo "Creating ~/.ssh/ directory..."
+  mkdir -p ~/.ssh
+fi
 
-echo "Setting bash as default shell..."
-chsh -s /bin/bash
+if [ -f "~/.ssh/id_rsa.pub" ]; then
+  echo "Using existing public key ~/.ssh/id_rsa.pub..."
+else
+  echo "Generating a new SSH key..."
+  ssh-keygen -f ~/.ssh/id_rsa -t rsa -b 2048 -C "benpapillon@gmail.com"
+fi
+
+cat ~/.ssh/id_rsa.pub | pbcopy
+read -p "Public key has been copied to your clipboard. Add it to Github (https://github.com/settings/ssh/new), then press enter to continue..."
 
 echo "Installing dotfiles..."
 echo "TODO: set up dotfiles (https://github.com/bpapillon/dotfiles)"
 exit 1
-
-echo "Activating bash profile..."
-source ~/.bash_profile
-
-# TODO: SSL setup
 
 echo "Installing Homebrew..." # TODO check if homebrew already installed
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -56,8 +63,8 @@ Set up your Apple ID, and install the following apps via the App Store:
 * Twitter
 
 And then some settings to configure:
-* chrome://settings/content/notifications - disallow sites from asking for permission to send notifications
 * Enable hot corner to lock screen
 * Set Do Not Disturb to "Always On"
+* chrome://settings/content/notifications - disallow sites from asking for permission to send notifications
 EOF
 
