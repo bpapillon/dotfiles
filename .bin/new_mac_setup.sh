@@ -30,6 +30,8 @@ echo "Installing pyenv via Homebrew..."
 brew install pyenv
 echo "Installing rbenv via Homebrew..."
 brew install rbenv
+echo "Installing hugo via Homebrew..."
+brew install hugo
 
 echo "Installing nvm via curl-bash..."
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
@@ -56,5 +58,6 @@ Set up your Apple ID, and install the following apps via the App Store:
 And then some settings to configure:
 * chrome://settings/content/notifications - disallow sites from asking for permission to send notifications
 * Enable hot corner to lock screen
+* Set Do Not Disturb to "Always On"
 EOF
 
