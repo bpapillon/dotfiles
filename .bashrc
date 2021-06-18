@@ -7,7 +7,7 @@ parse_git_branch() {
 # PATH & misc exports
 export BASH_SILENCE_DEPRECATION_WARNING=1 # Silence warning to change to zsh
 export EDITOR=vim
-export PATH=/Applications/Postgres.app/Contents/Versions/10/bin:/opt/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/sbin:~/Library/Python/2.7/bin:~/Library/Python/3.7/bin/:/usr/local/include/:/usr/local/go/bin:/Users/bpapillon/go/bin
+export PATH=/Applications/Postgres.app/Contents/Versions/10/bin:/opt/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/sbin:~/Library/Python/2.7/bin:~/Library/Python/3.7/bin/:/usr/local/include/:/usr/local/go/bin:/Users/bpapillon/go/bin:${HOME}/projects/dev-env/git-commands
 
 # Aliases
 alias bx='bundle exec'
