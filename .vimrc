@@ -3,6 +3,9 @@ set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
   Plugin 'VundleVim/Vundle.vim'
 
+  Plugin 'Xuyuanp/nerdtree-git-plugin'
+  Plugin 'ctrlpvim/ctrlp.vim'
+  Plugin 'preservim/nerdtree'
   Plugin 'tpope/vim-commentary'
   Plugin 'tpope/vim-fugitive'
   Plugin 'tpope/vim-surround'
@@ -80,3 +83,10 @@ map <Leader>t :call RunCurrentSpecFile()<CR>
 map <Leader>s :call RunNearestSpec()<CR>
 map <Leader>l :call RunLastSpec()<CR>
 map <Leader>a :call RunAllSpecs()<CR>
+
+" NERDTree auto-start and keystroke mappings
+autocmd VimEnter * NERDTree | wincmd p
+nnoremap <C-n> :NERDTree<CR>
+nnoremap <C-t> :NERDTreeToggle<CR>
+nnoremap <C-f> :NERDTreeFind<CR>
+
