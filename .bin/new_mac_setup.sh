@@ -39,6 +39,8 @@ echo "Installing rbenv via Homebrew..."
 brew install rbenv
 echo "Installing hugo via Homebrew..."
 brew install hugo
+echo "Installing jq via Homebrew..."
+brew install jq
 
 echo "Installing nvm via curl-bash..."
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash

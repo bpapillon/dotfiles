@@ -1,6 +1,8 @@
 [user]
   name = Ben Papillon
   email = benpapillon@gmail.com
+[pull]
+  rebase = false
 [push]
   default = matching
 [mergetool]
