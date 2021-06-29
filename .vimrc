@@ -23,6 +23,7 @@ call vundle#begin()
   Plugin 'thoughtbot/vim-rspec'
   Plugin 'tpope/vim-markdown'
   Plugin 'vim-ruby/vim-ruby'
+  Plugin 'iloginow/vim-stylus'
 call vundle#end()
 
 " colors
