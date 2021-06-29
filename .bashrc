@@ -7,12 +7,13 @@ parse_git_branch() {
 # PATH & misc exports
 export BASH_SILENCE_DEPRECATION_WARNING=1 # Silence warning to change to zsh
 export EDITOR=vim
-export PATH=/Applications/Postgres.app/Contents/Versions/10/bin:/opt/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/sbin:~/Library/Python/2.7/bin:~/Library/Python/3.7/bin/:/usr/local/include/:/usr/local/go/bin:/Users/bpapillon/go/bin:${HOME}/projects/dev-env/git-commands
+export PATH=/Applications/Postgres.app/Contents/Versions/10/bin:/opt/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/sbin:~/Library/Python/2.7/bin:~/Library/Python/3.7/bin/:/usr/local/include/:/usr/local/go/bin:/Users/bpapillon/go/bin
 
 # Aliases
 alias bx='bundle exec'
 alias config='/usr/bin/git --git-dir=/Users/bpapillon/.cfg/ --work-tree=/Users/bpapillon'
 alias dc='docker-compose'
+alias drawio='/Applications/draw.io.app/Contents/MacOS/draw.io'
 alias gitpylint='git status --porcelain | sed s/^...// | xargs pylint'
 alias ll='ls -al'
 alias rmpyc='find . -name "*.pyc" -delete'
@@ -68,4 +69,7 @@ note() {
 pnote() {
   vim ~/notes/*-$1.txt
 }
+
+# Relay Payments
+export PATH=$PATH:$HOME/projects/dev-env/bin
 
