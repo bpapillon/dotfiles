@@ -23,8 +23,7 @@ cat ~/.ssh/id_rsa.pub | pbcopy
 read -p "Public key has been copied to your clipboard. Add it to Github (https://github.com/settings/ssh/new), then press enter to continue..."
 
 echo "Installing dotfiles..."
-echo "TODO: set up dotfiles (https://github.com/bpapillon/dotfiles)"
-exit 1
+curl -Ls https://raw.githubusercontent.com/bpapillon/dotfiles/master/.bin/install.sh | /bin/bash
 
 echo "Installing Homebrew..." # TODO check if homebrew already installed
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
