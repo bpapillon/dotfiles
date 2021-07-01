@@ -24,6 +24,8 @@ call vundle#begin()
   Plugin 'tpope/vim-markdown'
   Plugin 'vim-ruby/vim-ruby'
   Plugin 'iloginow/vim-stylus'
+  Plugin 'peitalin/vim-jsx-typescript'
+  Plugin 'MaxMEllon/vim-jsx-pretty'
 call vundle#end()
 
 " colors
