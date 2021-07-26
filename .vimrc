@@ -1,31 +1,37 @@
 " plugins (vundle)
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
+  " Yo dawg
   Plugin 'VundleVim/Vundle.vim'
 
-  Plugin 'Xuyuanp/nerdtree-git-plugin'
-  Plugin 'ctrlpvim/ctrlp.vim'
-  Plugin 'preservim/nerdtree'
+  " File editing
+  Plugin 'dense-analysis/ale'
   Plugin 'tpope/vim-commentary'
-  Plugin 'tpope/vim-fugitive'
   Plugin 'tpope/vim-surround'
-  Plugin 'vim-airline/vim-airline'
-  Plugin 'vim-airline/vim-airline-themes'
-  Plugin 'w0rp/ale'
+  Plugin 'vim-test/vim-test'
+
+  " File navigation (fuzzy finder, filetree sidebar, version control)
+  Plugin 'Xuyuanp/nerdtree-git-plugin'
+  Plugin 'airblade/vim-gitgutter'
+  Plugin 'junegunn/fzf', { 'do': { -> fzf#install() } }
+  Plugin 'junegunn/fzf.vim'
+  Plugin 'preservim/nerdtree'
+  Plugin 'tpope/vim-fugitive'
 
   " Language support
-  Plugin 'chrisbra/csv.vim'
+  Plugin 'MaxMEllon/vim-jsx-pretty'
   Plugin 'fatih/vim-go'
+  Plugin 'iloginow/vim-stylus'
   Plugin 'leafgarland/typescript-vim'
   Plugin 'lifepillar/pgsql.vim'
   Plugin 'mxw/vim-jsx'
   Plugin 'pangloss/vim-javascript'
-  Plugin 'thoughtbot/vim-rspec'
-  Plugin 'tpope/vim-markdown'
-  Plugin 'vim-ruby/vim-ruby'
-  Plugin 'iloginow/vim-stylus'
   Plugin 'peitalin/vim-jsx-typescript'
-  Plugin 'MaxMEllon/vim-jsx-pretty'
+  Plugin 'tpope/vim-markdown'
+
+  " Status line
+  Plugin 'vim-airline/vim-airline'
+  Plugin 'vim-airline/vim-airline-themes'
 call vundle#end()
 
 " colors
@@ -80,13 +86,6 @@ if has('autocmd')
   autocmd BufWritePre * :%s/\s\+$//ge
 endif
 
-" RSpec.vim mappings
-let g:rspec_command = "!bundle exec rspec {spec}"
-map <Leader>t :call RunCurrentSpecFile()<CR>
-map <Leader>s :call RunNearestSpec()<CR>
-map <Leader>l :call RunLastSpec()<CR>
-map <Leader>a :call RunAllSpecs()<CR>
-
 " NERDTree auto-start and keystroke mappings
 autocmd VimEnter * NERDTree | wincmd p
 nnoremap <C-n> :NERDTree<CR>
@@ -96,3 +95,11 @@ nnoremap <C-f> :NERDTreeFind<CR>
 " Exit Vim if NERDTree is the only window left
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() |
     \ quit | endif
+
+" Airline settings
+let g:airline#extensions#ale#enabled = 1
+let g:airline#extensions#tabline#enabled = 1
+
+" go to definition in a split
+" TODO fix this
+nnoremap gd :only<bar>vsplit<CR>gd
