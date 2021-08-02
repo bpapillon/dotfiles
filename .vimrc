@@ -12,7 +12,6 @@ call vundle#begin()
 
   " File navigation (fuzzy finder, filetree sidebar, version control)
   Plugin 'Xuyuanp/nerdtree-git-plugin'
-  Plugin 'airblade/vim-gitgutter'
   Plugin 'junegunn/fzf', { 'do': { -> fzf#install() } }
   Plugin 'junegunn/fzf.vim'
   Plugin 'preservim/nerdtree'
