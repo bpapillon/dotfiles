@@ -94,7 +94,7 @@ export DOCKER_PATH=$DEV_ENV_PATH/docker/relay
 function gl {
   # TODO: This only works from the base path of the repo
   REMOTE_URL=$(git remote get-url origin)
-  GITLAB_BASE_URL=$(echo $REMOTE_URL | sed 's/^ssh\:\/\/git\@/https\:\/\//' | sed 's/\.git$//' | sed 's/\:6767//')
+  GITLAB_BASE_URL=$(echo $REMOTE_URL | sed 's/^ssh\:\/\/git\@/https\:\/\//; s/\.git$//; s/\:6767//')
   BRANCH_NAME=$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
   if [[ -z $1 ]]; then
     echo $GITLAB_BASE_URL
@@ -120,8 +120,8 @@ function linear {
   echo $LINEAR_URI
 }
 function lnc {
-  ln $1 | pbcopy
+  linear $1 | pbcopy
 }
 function lno {
-  ln $1 | xargs open
+  linear $1 | xargs open
 }
