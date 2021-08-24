@@ -8,7 +8,7 @@ parse_git_branch() {
 export BASH_SILENCE_DEPRECATION_WARNING=1 # Silence warning to change to zsh
 export EDITOR=vim
 export GOPATH="$HOME/go"
-export PATH=/Applications/Postgres.app/Contents/Versions/10/bin:/opt/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/sbin:~/Library/Python/2.7/bin:~/Library/Python/3.7/bin/:/usr/local/include/:/usr/local/go/bin:/Users/bpapillon/go/bin:$GOPATH/bin
+export PATH=/Applications/Postgres.app/Contents/Versions/10/bin:/opt/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/sbin:~/Library/Python/2.7/bin:~/Library/Python/3.7/bin/:/usr/local/include/:/usr/local/go/bin:$GOPATH/bin:/usr/local/opt/libpq/bin
 
 # Aliases
 alias bx='bundle exec'
@@ -107,21 +107,4 @@ function glc {
 }
 function glo {
   gl $1 | xargs open
-}
-
-function linear {
-  LINEAR_ORG=relaypayments
-  LINEAR_TEAM=WEST
-  if [[ -z $1 ]]; then
-    LINEAR_URI=https://linear.app/$LINEAR_ORG/team/$LINEAR_TEAM/board
-  else
-    LINEAR_URI=https://linear.app/$LINEAR_ORG/issue/$1/
-  fi
-  echo $LINEAR_URI
-}
-function lnc {
-  linear $1 | pbcopy
-}
-function lno {
-  linear $1 | xargs open
 }
