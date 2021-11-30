@@ -115,19 +115,12 @@ let g:coc_global_extensions = ['coc-tsserver']
 nnoremap <left> :bp<cr>
 nnoremap <right> :bn<cr>
 
-" Gitlab stuff
-function GitlabCopy()
+" quickly open or copy gitlab URL for current file and line
+function Gitlab(cmd)
   let l:filename = @%
   let l:lineno = "\\#L" . line('.')
-  let l:cmd = "!source ~/.bashrc && glc " . l:filename . l:lineno
-  execute l:cmd
+  execute "!source ~/.bashrc && " . a:cmd . " " . l:filename . l:lineno
 endfunction
-function GitlabOpen()
-  let l:filename = @%
-  let l:lineno = "\\#L" . line('.')
-  let l:cmd = "!source ~/.bashrc && glo " . l:filename . l:lineno
-  execute l:cmd
-endfunction
-command GitlabCopy call GitlabCopy()
-command GitlabOpen call GitlabOpen()
+command GitlabCopy call Gitlab("glc")
+command GitlabOpen call Gitlab("glo")
 map <C-g> :GitlabOpen<CR>
