@@ -92,14 +92,14 @@ export PATH=$PATH:$DEV_ENV_PATH/bin
 export DOCKER_PATH=$DEV_ENV_PATH/docker/relay
 
 function gl {
-  # TODO: This only works from the base path of the repo
   REMOTE_URL=$(git remote get-url origin)
   GITLAB_BASE_URL=$(echo $REMOTE_URL | sed 's/^ssh\:\/\/git\@/https\:\/\//; s/\.git$//; s/\:6767//')
   BRANCH_NAME=$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
+  CURRENT_PATH=$(git rev-parse --show-prefix)
   if [[ -z $1 ]]; then
     echo $GITLAB_BASE_URL
   else
-    echo "$GITLAB_BASE_URL/-/blob/$BRANCH_NAME/$1"
+    echo "$GITLAB_BASE_URL/-/blob/$BRANCH_NAME/$CURRENT_PATH$1"
   fi
 }
 function glc {
