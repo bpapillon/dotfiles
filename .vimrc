@@ -18,7 +18,6 @@ call vundle#begin()
   Plugin 'tpope/vim-fugitive'
 
   " Language support
-  Plugin 'MaxMEllon/vim-jsx-pretty'
   Plugin 'fatih/vim-go'
   Plugin 'iloginow/vim-stylus'
   Plugin 'leafgarland/typescript-vim'
@@ -26,7 +25,9 @@ call vundle#begin()
   Plugin 'mxw/vim-jsx'
   Plugin 'pangloss/vim-javascript'
   Plugin 'peitalin/vim-jsx-typescript'
+  Plugin 'maxmellon/vim-jsx-pretty'
   Plugin 'tpope/vim-markdown'
+  Plugin 'neoclide/coc.nvim', {'branch': 'release'}
 
   " Status line
   Plugin 'vim-airline/vim-airline'
@@ -55,6 +56,7 @@ set lazyredraw " redraw only when we need to.
 set number " line numbers
 set relativenumber " relative line numbers
 set ruler " show cursor position
+set scrolloff=10 " show 10 lines above and below cursor location
 set showmatch " highlight matching brackets and parens
 set visualbell " use visual bell instead of audio
 set wildmenu " visual autocomplete for command menu
@@ -105,3 +107,27 @@ let g:airline#extensions#tabline#enabled = 1
 " go to definition in a split
 " TODO fix this
 nnoremap gd :only<bar>vsplit<CR>gd
+
+" CoC extensions
+let g:coc_global_extensions = ['coc-tsserver']
+
+" switch buffers with left and right arrow keys
+nnoremap <left> :bp<cr>
+nnoremap <right> :bn<cr>
+
+" Gitlab stuff
+function GitlabCopy()
+  let l:filename = @%
+  let l:lineno = "\\#L" . line('.')
+  let l:cmd = "!source ~/.bashrc && glc " . l:filename . l:lineno
+  execute l:cmd
+endfunction
+function GitlabOpen()
+  let l:filename = @%
+  let l:lineno = "\\#L" . line('.')
+  let l:cmd = "!source ~/.bashrc && glo " . l:filename . l:lineno
+  execute l:cmd
+endfunction
+command GitlabCopy call GitlabCopy()
+command GitlabOpen call GitlabOpen()
+map <C-g> :GitlabOpen<CR>
