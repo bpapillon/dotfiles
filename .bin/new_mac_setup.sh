@@ -30,6 +30,8 @@ echo "Installing Homebrew..." # TODO check if homebrew already installed
 
 echo "Installing golang via Homebrew..."
 brew update && brew install golang
+echo "Installing psql via Homebrew..."
+brew install postgresql
 echo "Installing npm via Homebrew..."
 brew install npm
 echo "Installing pyenv via Homebrew..."
@@ -45,6 +47,9 @@ brew install awslogs
 
 echo "Installing nvm via curl-bash..."
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+
+echo "Installing yarn via npm..."
+npm install --global yarn
 
 echo "Setting up notes and projects directories..."
 mkdir ~/projects
