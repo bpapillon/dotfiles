@@ -75,6 +75,9 @@ fi
 # haskell/ghcup
 [ -f "/Users/bpapillon/.ghcup/env" ] && source "/Users/bpapillon/.ghcup/env" # ghcup-env
 
+# homebrew
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
 # Notes
 note() {
   vim ~/notes/$(date +%Y%m%d)-$1.txt
@@ -84,6 +87,11 @@ note() {
 }
 pnote() {
   vim ~/notes/*-$1.txt
+}
+
+# Scratch
+scratch() {
+  vim ~/projects/scratch/scratch-$(date +%Y%m%d).txt
 }
 
 # Relay Payments
