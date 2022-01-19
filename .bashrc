@@ -28,6 +28,7 @@ alias rmpyc='find . -name "*.pyc" -delete'
 alias ssh_forward='eval $(ssh-agent) && ssh-add ~/.ssh/id_rsa'
 alias v='vim'
 alias weather='curl -4 http://wttr.in/Atlanta'
+alias branch_clean="git branch -vv | grep ': gone]' | grep -v '\*' | awk '{print \$1}' | xargs -r git branch -D"
 
 # History
 export HISTCONTROL=ignoredups:erasedups
