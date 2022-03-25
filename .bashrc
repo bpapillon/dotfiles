@@ -29,6 +29,9 @@ alias ssh_forward='eval $(ssh-agent) && ssh-add ~/.ssh/id_rsa'
 alias v='vim'
 alias weather='curl -4 http://wttr.in/Atlanta'
 alias branch_clean="git branch -vv | grep ': gone]' | grep -v '\*' | awk '{print \$1}' | xargs -r git branch -D"
+alias sync="relay-sync && branch_clean"
+alias glint="golangci-lint run --config ./.build/scripts/.golangci.yml --timeout 5m ./..."
+alias crun="docker run --volume $(pwd):/app --workdir /app -it --rm"
 
 # History
 export HISTCONTROL=ignoredups:erasedups
