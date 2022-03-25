@@ -22,12 +22,12 @@ call vundle#begin()
   Plugin 'iloginow/vim-stylus'
   Plugin 'leafgarland/typescript-vim'
   Plugin 'lifepillar/pgsql.vim'
+  Plugin 'maxmellon/vim-jsx-pretty'
   Plugin 'mxw/vim-jsx'
+  Plugin 'neoclide/coc.nvim', {'branch': 'release'}
   Plugin 'pangloss/vim-javascript'
   Plugin 'peitalin/vim-jsx-typescript'
-  Plugin 'maxmellon/vim-jsx-pretty'
   Plugin 'tpope/vim-markdown'
-  Plugin 'neoclide/coc.nvim', {'branch': 'release'}
 
   " Status line
   Plugin 'vim-airline/vim-airline'
