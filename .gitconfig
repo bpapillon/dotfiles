@@ -45,11 +45,14 @@
   cp = cherry-pick
   d = diff
   f = fetch
+  ft = fetch --tags --force
   l = log --graph --oneline
   m = merge --no-ff
   p = pull
   ps = push -u origin HEAD
+  psl = push --force-with-lease
   rb = rebase
+  rbc = rebase --continue
   recent = branch --sort=-committerdate --format="%(committerdate:relative)%09%(refname:short)"
   rh = reset HEAD
   rsh = reset --soft HEAD~1
