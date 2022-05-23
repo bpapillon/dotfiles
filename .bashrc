@@ -21,6 +21,7 @@ alias gitpylint='git status --porcelain | sed s/^...// | xargs pylint'
 alias grep='grep --color=always'
 alias h='history'
 alias hg='history | grep'
+alias hoy='git'
 alias ll='ls -al'
 alias ls='ls -G'
 alias moon='curl -4 http://wttr.in/Moon'
@@ -106,12 +107,13 @@ export DOCKER_PATH=$DEV_ENV_PATH/docker/relay
 function gl {
   REMOTE_URL=$(git remote get-url origin)
   GITLAB_BASE_URL=$(echo $REMOTE_URL | sed 's/^ssh\:\/\/git\@/https\:\/\//; s/\.git$//; s/\:6767//')
-  BRANCH_NAME=$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
+  # BRANCH_NAME=$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
+  REVISION=$(git rev-parse HEAD)
   CURRENT_PATH=$(git rev-parse --show-prefix)
   if [[ -z $1 ]]; then
     echo $GITLAB_BASE_URL
   else
-    echo "$GITLAB_BASE_URL/-/blob/$BRANCH_NAME/$CURRENT_PATH$1"
+    echo "$GITLAB_BASE_URL/-/blob/$REVISION/$CURRENT_PATH$1"
   fi
 }
 function glc {
