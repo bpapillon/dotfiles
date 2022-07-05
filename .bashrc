@@ -1,62 +1,79 @@
-# PS1
+### PS1
+
 PS1='^\e[0;35m\W\e[m\e[0;36m$(parse_git_branch)\e[m\$ '
 parse_git_branch() {
     git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
 }
 
-# PATH & misc exports
+### PATH & other important stuff
+
 export BASH_SILENCE_DEPRECATION_WARNING=1 # Silence warning to change to zsh
 export EDITOR=vim
 export GOPATH="$HOME/go"
 export PATH=/Applications/Postgres.app/Contents/Versions/10/bin:/opt/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/sbin:~/Library/Python/2.7/bin:~/Library/Python/3.7/bin/:/usr/local/include/:/usr/local/go/bin:$GOPATH/bin:/usr/local/opt/libpq/bin:/usr/local/mysql/bin:/usr/local/mysql/support-files
 
-# Aliases
+### Misc aliases
+
 alias bx='bundle exec'
 alias chrome='open -a Google\ Chrome'
 alias config='/usr/bin/git --git-dir=/Users/bpapillon/.cfg/ --work-tree=/Users/bpapillon'
 alias dc='docker-compose'
 alias drawio='/Applications/draw.io.app/Contents/MacOS/draw.io'
-alias g='git'
 alias gitpylint='git status --porcelain | sed s/^...// | xargs pylint'
 alias grep='grep --color=always'
 alias h='history'
 alias hg='history | grep'
-alias hoy='git'
 alias ll='ls -al'
 alias ls='ls -G'
 alias moon='curl -4 http://wttr.in/Moon'
 alias rmpyc='find . -name "*.pyc" -delete'
 alias ssh_forward='eval $(ssh-agent) && ssh-add ~/.ssh/id_rsa'
 alias v='vim'
+alias vun='vim'
 alias weather='curl -4 http://wttr.in/Atlanta'
-alias branch_clean="git branch -vv | grep ': gone]' | grep -v '\*' | awk '{print \$1}' | xargs -r git branch -D"
-alias sync="relay-sync && branch_clean"
 alias glint="golangci-lint run --config ./.build/scripts/.golangci.yml --timeout 5m ./..."
 alias crun="docker run --volume $(pwd):/app --workdir /app -it --rm"
 
-# History
+### History
+
 export HISTCONTROL=ignoredups:erasedups
 export HISTSIZE=100000
 export HISTFILESIZE=100000
 shopt -s histappend
 export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 
-# git autocompletion
+### Git
+
+alias g='git'
+alias hoy='git'
+
+# Git autocompletion
 if [ -f ~/.git-completion.bash ]; then
   . ~/.git-completion.bash
 fi
 
-# print only column x of output
-# stolen from https://bitbucket.org/durdn/cfg/src/master/.bashrc
-function col {
-  awk -v col=$1 '{print $col}'
+# Function to get the default branch for the current repo
+git_default_branch() {
+  (git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@') 2>/dev/null
 }
 
-# global search and replace OSX
-# stolen from https://bitbucket.org/durdn/cfg/src/master/.bashrc
-function sr {
-    find . -type f -exec sed -i '' s/$1/$2/g {} +
+# Alias for rebasing a working branch
+git_rebase_branch() {
+  FIRST_COMMIT=$(git cherry -v $(git_default_branch) | cut -d' ' -f 2 | head -n 1)
+  git rebase -i $FIRST_COMMIT~
 }
+alias grb="git_rebase_branch"
+
+# List commits that are unique to the current working branch
+git_branch_commits() {
+  git cherry -v $(git_default_branch)
+}
+alias gbc="git_branch_commits"
+
+# Clean local git branches
+alias branch_clean="git branch -vv | grep ': gone]' | grep -v '\*' | awk '{print \$1}' | xargs -r git branch -D"
+
+### Package managers
 
 # nvm
 if [ -d $HOME/.nvm ]; then
@@ -83,6 +100,8 @@ fi
 # homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
+### Note-taking
+
 # Notes
 note() {
   vim ~/notes/$(date +%Y%m%d)-$1.txt
@@ -99,7 +118,10 @@ scratch() {
   vim ~/projects/scratch/scratch-$(date +%Y%m%d).txt
 }
 
-# Relay Payments
+### Relay Payments
+
+alias sync="relay-sync && branch_clean"
+
 export DEV_ENV_PATH=$HOME/projects/dev-env
 export PATH=$PATH:$DEV_ENV_PATH/bin
 export DOCKER_PATH=$DEV_ENV_PATH/docker/relay
