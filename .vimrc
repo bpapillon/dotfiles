@@ -29,6 +29,7 @@ call vundle#begin()
   Plugin 'peitalin/vim-jsx-typescript'
   Plugin 'tpope/vim-markdown'
   Plugin 'uarun/vim-protobuf'
+  Plugin 'cespare/vim-toml'
 
   " Status line
   Plugin 'vim-airline/vim-airline'
