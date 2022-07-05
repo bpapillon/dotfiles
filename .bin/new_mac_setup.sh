@@ -34,6 +34,8 @@ echo "Installing psql via Homebrew..."
 brew install postgresql
 echo "Installing npm via Homebrew..."
 brew install npm
+echo "Installing neovim via Homebrew..."
+brew install neovim
 echo "Installing pyenv via Homebrew..."
 brew install pyenv
 echo "Installing rbenv via Homebrew..."
