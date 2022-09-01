@@ -100,6 +100,10 @@ fi
 # homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
+# bun
+BUN_INSTALL="/Users/bpapillon/.bun"
+PATH="$BUN_INSTALL/bin:$PATH"
+
 ### Note-taking
 
 # Notes
