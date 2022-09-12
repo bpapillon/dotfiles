@@ -32,8 +32,6 @@ echo "Installing golang via Homebrew..."
 brew update && brew install golang
 echo "Installing psql via Homebrew..."
 brew install postgresql
-echo "Installing npm via Homebrew..."
-brew install npm
 echo "Installing neovim via Homebrew..."
 brew install neovim
 echo "Installing pyenv via Homebrew..."
