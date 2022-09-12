@@ -67,3 +67,5 @@
   yps = push -u origin HEAD
 [submodule]
   recurse = true
+[include]
+  path = ~/.gitconfig__local
