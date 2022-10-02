@@ -44,6 +44,10 @@ echo "Installing jq via Homebrew..."
 brew install jq
 echo "Installing awslogs via Homebrew..." # https://github.com/jorgebastida/awslogs
 brew install awslogs
+echo "Installing ripgrep via Homebrew..."
+brew install ripgrep
+echo "Installing fd via Homebrew..."
+brew install fd
 
 echo "Installing nvm via curl-bash..."
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
