@@ -33,6 +33,8 @@ alias vun='vim'
 alias weather='curl -4 http://wttr.in/Atlanta'
 alias glint="golangci-lint run --config ./.build/scripts/.golangci.yml --timeout 5m ./..."
 alias crun="docker run --volume $(pwd):/app --workdir /app -it --rm"
+alias vi="nvim"
+alias vim="nvim"
 
 ### History
 
@@ -96,6 +98,9 @@ fi
 
 # haskell/ghcup
 [ -f "/Users/bpapillon/.ghcup/env" ] && source "/Users/bpapillon/.ghcup/env" # ghcup-env
+
+# rust/cargo
+. "$HOME/.cargo/env"
 
 # homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
