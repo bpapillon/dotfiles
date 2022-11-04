@@ -67,6 +67,8 @@ nnoremap <C-f> :NERDTreeFind<CR>
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() |
     \ quit | endif
 
+let NERDTreeShowHidden=1
+
 " Airline settings
 let g:airline#extensions#ale#enabled = 1
 let g:airline#extensions#tabline#enabled = 1
