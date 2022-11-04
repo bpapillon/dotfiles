@@ -48,6 +48,7 @@
   ft = fetch --tags --force
   l = log --graph --oneline
   m = merge --no-ff
+  main = !git checkout $(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
   p = pull
   ps = push -u origin HEAD
   psl = push --force-with-lease
