@@ -30,7 +30,8 @@
   a = add
   aa = add .
   b = branch
-  bc = branch -r --contains
+  bc = !git cherry -v $(git def)
+  bcon = branch -r --contains
   bd = branch -d
   bl = blame
   br = branch -r
@@ -44,15 +45,17 @@
   co = checkout
   cp = cherry-pick
   d = diff
+  def = !git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@'
   f = fetch
   ft = fetch --tags --force
   l = log --graph --oneline
   m = merge --no-ff
-  main = !git checkout $(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
+  main = !git checkout $(git def)
   p = pull
   ps = push -u origin HEAD
   psl = push --force-with-lease
   rb = rebase
+  rbb = !git rebase -i "$(git cherry -v $(git def) | cut -d' ' -f 2 | head -n 1)~"
   rbc = rebase --continue
   recent = branch --sort=-committerdate --format="%(committerdate:relative)%09%(refname:short)"
   rh = reset HEAD

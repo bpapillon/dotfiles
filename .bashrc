@@ -54,24 +54,6 @@ if [ -f ~/.git-completion.bash ]; then
   . ~/.git-completion.bash
 fi
 
-# Function to get the default branch for the current repo
-git_default_branch() {
-  (git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@') 2>/dev/null
-}
-
-# Alias for rebasing a working branch
-git_rebase_branch() {
-  FIRST_COMMIT=$(git cherry -v $(git_default_branch) | cut -d' ' -f 2 | head -n 1)
-  git rebase -i $FIRST_COMMIT~
-}
-alias grb="git_rebase_branch"
-
-# List commits that are unique to the current working branch
-git_branch_commits() {
-  git cherry -v $(git_default_branch)
-}
-alias gbc="git_branch_commits"
-
 # Clean local git branches
 alias branch_clean="git branch -vv | grep ': gone]' | grep -v '\*' | awk '{print \$1}' | xargs -r git branch -D"
 
