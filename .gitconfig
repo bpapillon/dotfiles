@@ -39,9 +39,9 @@
   ca = commit -a
   cam = commit -am
   cb = checkout -b
-  cd = commit --amend
   ch = cherry -v
   cm = commit -m
+  cmm = commit --amend -m
   co = checkout
   d = diff
   def = !git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@' # Get name of default branch
@@ -56,6 +56,7 @@
   psl = push --force-with-lease
   rb = rebase
   rbb = !git rebase -i "$(git cherry -v $(git def) | cut -d' ' -f 2 | head -n 1)~" # Rebase branch from start of new commits
+  rbm = !git rebase $(git def) # Rebase branch on default branch
   rbc = rebase --continue
   rh = reset HEAD
   rsh = reset --soft HEAD~1
