@@ -32,7 +32,6 @@ alias v='vim'
 alias vun='vim'
 alias weather='curl -4 http://wttr.in/Atlanta'
 alias glint="golangci-lint run --config ./.build/scripts/.golangci.yml --timeout 5m ./..."
-alias crun="docker run --volume $(pwd):/app --workdir /app -it --rm"
 alias vi="nvim"
 alias vim="nvim"
 
@@ -47,6 +46,11 @@ export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 ### Git
 
 alias g='git'
+
+# Common typos
+alias gd='g d'
+alias gs='g s'
+alias gp='g p'
 alias hoy='git'
 
 # Git autocompletion
