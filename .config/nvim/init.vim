@@ -89,3 +89,5 @@ endfunction
 command GitlabCopy call Gitlab("glc")
 command GitlabOpen call Gitlab("glo")
 map <C-g> :GitlabOpen<CR>
+
+set nofoldenable
