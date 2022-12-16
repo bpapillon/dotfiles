@@ -23,6 +23,7 @@ set expandtab " fill tabs with spaces
 " UI
 set laststatus=2
 set lazyredraw " redraw only when we need to.
+set nofoldenable " no folds
 set number " line numbers
 set relativenumber " relative line numbers
 set ruler " show cursor position
@@ -59,8 +60,6 @@ endif
 
 " NERDTree auto-start and keystroke mappings
 autocmd VimEnter * NERDTree | wincmd p
-nnoremap <C-n> :NERDTree<CR>
-nnoremap <C-t> :NERDTreeToggle<CR>
 nnoremap <C-f> :NERDTreeFind<CR>
 
 " Exit Vim if NERDTree is the only window left
@@ -90,4 +89,6 @@ command GitlabCopy call Gitlab("glc")
 command GitlabOpen call Gitlab("glo")
 map <C-g> :GitlabOpen<CR>
 
-set nofoldenable
+" nvim-test mappings
+nnoremap <Leader>t :TestFile<CR>
+nnoremap <Leader>n :TestNearest<CR>
