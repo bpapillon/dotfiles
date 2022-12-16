@@ -79,7 +79,7 @@ fi
 
 # rbenv
 if [ -d $HOME/.rbenv ]; then
-  eval "$(rbenv init -)"
+  eval "$(~/.rbenv/bin/rbenv init - bash)"
 fi
 
 # haskell/ghcup

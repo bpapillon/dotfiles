@@ -44,7 +44,8 @@
   cmm = commit --amend -m
   co = checkout
   d = diff
-  def = !git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@' # Get name of default branch
+  ; def = !git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@' # Get name of default branch
+  def = !git remote show origin | sed -n '/HEAD branch/s/.*: //p' # Get name of default branch
   f = fetch
   ft = fetch --tags --force
   l = log --graph --oneline
