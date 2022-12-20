@@ -16,12 +16,11 @@ return require('packer').startup(function(use)
 
   use("dense-analysis/ale")
   use("tpope/vim-commentary")
+  use("tpope/vim-fugitive")
   use("tpope/vim-surround")
 
   use("preservim/nerdtree")
   use("Xuyuanp/nerdtree-git-plugin")
-
-  use("tpope/vim-fugitive")
 
   use("vim-airline/vim-airline")
   use("vim-airline/vim-airline-themes")
@@ -31,17 +30,18 @@ return require('packer').startup(function(use)
     requires = { {'nvim-lua/plenary.nvim'} }
   }
 
+  use {'neoclide/coc.nvim', branch = 'release'}
+  use('cespare/vim-toml')
   use('fatih/vim-go')
+  use('github/copilot.vim')
   use('leafgarland/typescript-vim')
   use('maxmellon/vim-jsx-pretty')
   use('mxw/vim-jsx')
-  use {'neoclide/coc.nvim', branch = 'release'}
   use('pangloss/vim-javascript')
   use('peitalin/vim-jsx-typescript')
+  use('prettier/vim-prettier')
   use('tpope/vim-markdown')
   use('uarun/vim-protobuf')
-  use('cespare/vim-toml')
-  use('github/copilot.vim')
 
   use({
     'nvim-treesitter/nvim-treesitter',
@@ -111,5 +111,4 @@ return require('packer').startup(function(use)
       }
     end
   }
-
 end)
