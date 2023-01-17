@@ -89,6 +89,8 @@ check_bin_install "rbenv" || install_with_brew "rbenv"
 check_bin_install "ripgrep" || install_with_brew "ripgrep"
 check_bin_install "yarn" || install_with_npm "yarn"
 
+check_bin_install "op" || brew install --cask 1password/tap/1password-cli
+
 echo "Setting up notes and projects directories..."
 if [[ ! -f "~/projects" ]]
 then
