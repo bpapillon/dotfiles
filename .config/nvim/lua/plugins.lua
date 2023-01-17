@@ -100,7 +100,13 @@ return require('packer').startup(function(use)
   use {
     "klen/nvim-test",
     config = function()
-      require('nvim-test').setup {}
+      require('nvim-test').setup {
+        termOpts = {
+          direction = "float",
+          width = 192,
+          height = 48
+        }
+      }
 
       require('nvim-test.runners.go-test'):setup {
         env = {
@@ -111,4 +117,8 @@ return require('packer').startup(function(use)
       }
     end
   }
+
+  if packer_bootstrap then
+    require('packer').sync()
+  end
 end)
