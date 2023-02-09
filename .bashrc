@@ -115,7 +115,7 @@ scratch() {
 
 ### Relay Payments
 
-alias sync="relay-sync && branch_clean"
+alias rs='relay-sync'
 
 export DEV_ENV_PATH=$HOME/projects/dev-env
 export PATH=$PATH:$DEV_ENV_PATH/bin
