@@ -43,6 +43,8 @@ return require('packer').startup(function(use)
   use('tpope/vim-markdown')
   use('uarun/vim-protobuf')
 
+  use('sotte/presenting.vim')
+
   use({
     'nvim-treesitter/nvim-treesitter',
     run = function()
