@@ -63,6 +63,9 @@ alias branch_clean="git branch -vv | grep ': gone]' | grep -v '\*' | awk '{print
 
 ### Package managers
 
+# homebrew
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
 # nvm
 if [ -d $HOME/.nvm ]; then
   export NVM_DIR="$HOME/.nvm"
@@ -73,8 +76,8 @@ fi
 # pyenv
 if [ -d $HOME/.pyenv ]; then
   export PYENV_ROOT="$HOME/.pyenv"
-  export PATH="$PYENV_ROOT/bin:$PATH"
-  eval "$(pyenv init --path)"
+  command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+  eval "$(pyenv init -)"
 fi
 
 # rbenv
@@ -87,9 +90,6 @@ fi
 
 # rust/cargo
 . "$HOME/.cargo/env"
-
-# homebrew
-eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # bun
 BUN_INSTALL="/Users/bpapillon/.bun"
