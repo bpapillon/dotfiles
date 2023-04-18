@@ -63,6 +63,9 @@ alias branch_clean="git branch -vv | grep ': gone]' | grep -v '\*' | awk '{print
 
 ### Package managers
 
+# homebrew
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
 # nvm
 if [ -d $HOME/.nvm ]; then
   export NVM_DIR="$HOME/.nvm"
@@ -73,8 +76,8 @@ fi
 # pyenv
 if [ -d $HOME/.pyenv ]; then
   export PYENV_ROOT="$HOME/.pyenv"
-  export PATH="$PYENV_ROOT/bin:$PATH"
-  eval "$(pyenv init --path)"
+  command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+  eval "$(pyenv init -)"
 fi
 
 # rbenv
@@ -87,9 +90,6 @@ fi
 
 # rust/cargo
 . "$HOME/.cargo/env"
-
-# homebrew
-eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # bun
 BUN_INSTALL="/Users/bpapillon/.bun"
@@ -120,11 +120,11 @@ alias rs='relay-sync'
 export DEV_ENV_PATH=$HOME/projects/dev-env
 export PATH=$PATH:$DEV_ENV_PATH/bin
 export DOCKER_PATH=$DEV_ENV_PATH/docker/relay
+export PG_CONSOLE_COMMAND="pgcli -p 5432 -U bpapillon -h localhost"
 
 function gl {
   REMOTE_URL=$(git remote get-url origin)
   GITLAB_BASE_URL=$(echo $REMOTE_URL | sed 's/^ssh\:\/\/git\@/https\:\/\//; s/\.git$//; s/\:6767//')
-  # BRANCH_NAME=$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
   REVISION=$(git rev-parse HEAD)
   CURRENT_PATH=$(git rev-parse --show-prefix)
   if [[ -z $1 ]]; then
