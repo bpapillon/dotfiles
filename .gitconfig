@@ -32,7 +32,7 @@
   b = branch
   bc = !git cherry -v $(git def) # List commits not in default branch
   bcon = branch -r --contains # Get branch names that contain a given commit
-  bd = branch -d
+  bd = branch -D
   bl = blame
   branch-clean = !git branch | grep -v \\* | grep -v $(git def) | xargs git branch -D # Remove all local branches except current and default branches
   c = commit
