@@ -91,7 +91,10 @@ check_bin_install "ag" || install_with_brew "the_silver_searcher"
 check_bin_install "yarn" || install_with_npm "yarn"
 
 check_bin_install "op" || brew install --cask 1password/tap/1password-cli
+check_bin_install "figlet" || install_with_brew "figlet"
 check_bin_install "pgcli" || brew tap dbcli/tap && brew install pgcli
+
+eval "$(pyenv init -)"
 
 echo "Setting up notes and projects directories..."
 if [[ ! -f "~/projects" ]]

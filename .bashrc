@@ -10,30 +10,25 @@ parse_git_branch() {
 export BASH_SILENCE_DEPRECATION_WARNING=1 # Silence warning to change to zsh
 export EDITOR=vim
 export GOPATH="$HOME/go"
-export PATH=/Applications/Postgres.app/Contents/Versions/10/bin:/opt/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/sbin:~/Library/Python/2.7/bin:~/Library/Python/3.7/bin/:/usr/local/include/:/usr/local/go/bin:$GOPATH/bin:/usr/local/opt/libpq/bin:/usr/local/mysql/bin:/usr/local/mysql/support-files
+export PATH=/Applications/Postgres.app/Contents/Versions/10/bin:/opt/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/sbin:/usr/local/include/:/usr/local/go/bin:$GOPATH/bin:/usr/local/opt/libpq/bin:/usr/local/mysql/bin:/usr/local/mysql/support-files
 
 ### Misc aliases
 
 alias bx='bundle exec'
-alias chrome='open -a Google\ Chrome'
 alias config='/usr/bin/git --git-dir=/Users/bpapillon/.cfg/ --work-tree=/Users/bpapillon'
 alias dc='docker-compose'
-alias drawio='/Applications/draw.io.app/Contents/MacOS/draw.io'
-alias gitpylint='git status --porcelain | sed s/^...// | xargs pylint'
 alias grep='grep --color=always'
 alias h='history'
-alias hg='history | grep'
 alias ll='ls -al'
 alias ls='ls -G'
 alias moon='curl -4 http://wttr.in/Moon'
 alias rmpyc='find . -name "*.pyc" -delete'
 alias ssh_forward='eval $(ssh-agent) && ssh-add ~/.ssh/id_rsa'
 alias v='vim'
-alias vun='vim'
-alias weather='curl -4 http://wttr.in/Atlanta'
-alias glint="golangci-lint run --config ./.build/scripts/.golangci.yml --timeout 5m ./..."
 alias vi="nvim"
 alias vim="nvim"
+alias vun='vim'
+alias weather='curl -4 http://wttr.in/Atlanta'
 
 ### History
 
@@ -61,7 +56,10 @@ fi
 # Clean local git branches
 alias branch_clean="git branch -vv | grep ': gone]' | grep -v '\*' | awk '{print \$1}' | xargs -r git branch -D"
 
-### Package managers
+### Package and version managers
+
+# homebrew
+eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
