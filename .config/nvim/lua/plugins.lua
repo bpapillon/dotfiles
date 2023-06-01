@@ -41,7 +41,6 @@ return require('packer').startup(function(use)
   use('peitalin/vim-jsx-typescript')
   use('prettier/vim-prettier')
   use('tpope/vim-markdown')
-  use('uarun/vim-protobuf')
 
   use('sotte/presenting.vim')
 
@@ -58,7 +57,6 @@ return require('packer').startup(function(use)
           'comment',
           'css',
           'dockerfile',
-          'fish',
           'gitignore',
           'go',
           'gomod',
@@ -74,22 +72,15 @@ return require('packer').startup(function(use)
           'make',
           'markdown',
           'markdown_inline',
-          'ocaml',
           'python',
           'regex',
           'ruby',
           'rust',
           'scss',
-          'solidity',
-          'sql',
-          'svelte',
-          'swift',
-          'todotxt',
           'toml',
           'tsx',
           'typescript',
           'vim',
-          'vue',
         },
         highlight = {
           enable = true,
