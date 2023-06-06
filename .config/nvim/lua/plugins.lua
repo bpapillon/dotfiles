@@ -77,6 +77,7 @@ return require('packer').startup(function(use)
           'ruby',
           'rust',
           'scss',
+          'sql',
           'toml',
           'tsx',
           'typescript',
@@ -99,14 +100,6 @@ return require('packer').startup(function(use)
           width = 192,
           height = 48
         }
-      }
-
-      require('nvim-test.runners.go-test'):setup {
-        env = {
-          RCORE_TEST_CONFIG = "/Users/bpapillon/projects/dev-env/relay-rcore-testing.toml",
-          RELAY_TEST_CONFIG = "/Users/bpapillon/projects/dev-env/relay-core-testing.toml",
-          RPOS_TEST_CONFIG = "/Users/bpapillon/projects/dev-env/relay-portal-testing.toml",
-        },
       }
     end
   }

@@ -10,7 +10,7 @@ parse_git_branch() {
 export BASH_SILENCE_DEPRECATION_WARNING=1 # Silence warning to change to zsh
 export EDITOR=vim
 export GOPATH="$HOME/go"
-export PATH=/Applications/Postgres.app/Contents/Versions/10/bin:/opt/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/sbin:/usr/local/include/:/usr/local/go/bin:$GOPATH/bin:/usr/local/opt/libpq/bin:/usr/local/mysql/bin:/usr/local/mysql/support-files
+export PATH=/Applications/Postgres.app/Contents/Versions/latest/bin:/opt/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/sbin:/usr/local/include/:/usr/local/go/bin:$GOPATH/bin:/usr/local/opt/libpq/bin:/usr/local/mysql/bin:/usr/local/mysql/support-files
 
 ### Misc aliases
 
@@ -53,13 +53,7 @@ if [ -f ~/.git-completion.bash ]; then
   . ~/.git-completion.bash
 fi
 
-# Clean local git branches
-alias branch_clean="git branch -vv | grep ': gone]' | grep -v '\*' | awk '{print \$1}' | xargs -r git branch -D"
-
 ### Package and version managers
-
-# homebrew
-eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
@@ -111,24 +105,23 @@ scratch() {
   vim ~/projects/scratch/scratch-$(date +%Y%m%d).txt
 }
 
-### Relay Payments
-
-alias rs='relay-sync'
-
-export DEV_ENV_PATH=$HOME/projects/dev-env
-export PATH=$PATH:$DEV_ENV_PATH/bin
-export DOCKER_PATH=$DEV_ENV_PATH/docker/relay
-export PG_CONSOLE_COMMAND="pgcli -p 5432 -U bpapillon -h localhost"
+### GitHub
 
 function gl {
-  REMOTE_URL=$(git remote get-url origin)
-  GITLAB_BASE_URL=$(echo $REMOTE_URL | sed 's/^ssh\:\/\/git\@/https\:\/\//; s/\.git$//; s/\:6767//')
-  REVISION=$(git rev-parse HEAD)
-  CURRENT_PATH=$(git rev-parse --show-prefix)
+  remote_url=$(git remote get-url origin)
+  if [[ $remote_url != *"github.com"* ]]; then
+    echo "Not a GitHub remote"
+    return 1
+  fi
+
+  web_url="${remote_url/git@github.com:/https://github.com/}"
+  web_url="${web_url%.git}"
+  revision=$(git rev-parse HEAD)
+  cur_path=$(git rev-parse --show-prefix)
   if [[ -z $1 ]]; then
-    echo $GITLAB_BASE_URL
+    echo $web_url
   else
-    echo "$GITLAB_BASE_URL/-/blob/$REVISION/$CURRENT_PATH$1"
+    echo "$web_url/blob/$revision/$cur_path$1"
   fi
 }
 function glc {
