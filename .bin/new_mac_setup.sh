@@ -113,7 +113,6 @@ Download and install the following apps:
 * [Chrome browser](https://www.google.com/chrome/)
 * [Docker for Mac](https://docs.docker.com/docker-for-mac/install/)
 * [Rectangle window manager](https://rectangleapp.com/) - remember to configure the keystrokes after installing
-* [Sonos S2 controller](https://support.sonos.com/s/downloads?language=en_US)
 * [Spotify](https://www.spotify.com/us/download/mac/)
 * [Zoom](https://zoom.us/download#client_4meeting)
 

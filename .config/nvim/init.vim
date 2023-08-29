@@ -3,6 +3,7 @@ let &packpath = &runtimepath
 
 lua require('plugins')
 lua require('mappings')
+lua require('coc')
 
 " colors
 syntax enable " syntax highlighting
@@ -56,6 +57,9 @@ set backupskip=/tmp/*,/private/tmp/* " Let me edit crontab files
 if has('autocmd')
   " delete trailing whitespace
   autocmd BufWritePre * :%s/\s\+$//ge
+
+  " Enable automatic formatting with Prettier on file save
+  autocmd BufWritePre *.js,*.jsx,*.ts,*.tsx,*.json,*.html,*.css,*.scss,*.md :Prettier
 endif
 
 " NERDTree auto-start and keystroke mappings
@@ -80,14 +84,14 @@ nnoremap <left> :bp<cr>
 nnoremap <right> :bn<cr>
 
 " quickly open or copy gitlab URL for current file and line
-function Gitlab(cmd)
+function GitHub(cmd)
   let l:filename = @%
   let l:lineno = "\\#L" . line('.')
   execute "!source ~/.bashrc && " . a:cmd . " " . l:filename . l:lineno
 endfunction
-command GitlabCopy call Gitlab("glc")
-command GitlabOpen call Gitlab("glo")
-map <C-g> :GitlabOpen<CR>
+command GitHubCopy call GitHub("ghc")
+command GitHubOpen call GitHub("gho")
+map <C-g> :GitHubOpen<CR>
 
 " nvim-test mappings
 nnoremap <Leader>t :TestFile<CR>

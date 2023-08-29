@@ -10,7 +10,7 @@ parse_git_branch() {
 export BASH_SILENCE_DEPRECATION_WARNING=1 # Silence warning to change to zsh
 export EDITOR=vim
 export GOPATH="$HOME/go"
-export PATH=/Applications/Postgres.app/Contents/Versions/latest/bin:/opt/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/sbin:/usr/local/include/:/usr/local/go/bin:$GOPATH/bin:/usr/local/opt/libpq/bin:/usr/local/mysql/bin:/usr/local/mysql/support-files
+export PATH=/Applications/Postgres.app/Contents/Versions/latest/bin:/opt/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/sbin:/usr/local/include/:/usr/local/go/bin:$GOPATH/bin:/usr/local/opt/libpq/bin:/usr/local/mysql/bin:/usr/local/mysql/support-files:$HOME/bin
 
 ### Misc aliases
 
@@ -107,7 +107,7 @@ scratch() {
 
 ### GitHub
 
-function gl {
+function gh {
   remote_url=$(git remote get-url origin)
   if [[ $remote_url != *"github.com"* ]]; then
     echo "Not a GitHub remote"
@@ -124,9 +124,14 @@ function gl {
     echo "$web_url/blob/$revision/$cur_path$1"
   fi
 }
-function glc {
-  gl $1 | pbcopy
+function ghc {
+  gh $1 | pbcopy
 }
-function glo {
-  gl $1 | xargs open
+function gho {
+  gh $1 | xargs open
 }
+
+
+### Schematic
+SCHEMATIC_PROJECT_DIR="$HOME/projects/schematic/"
+SCHEMATIC_API_TEST_CONFIG="$HOME/projects/schematic/api/test.env"

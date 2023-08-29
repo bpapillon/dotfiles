@@ -40,6 +40,7 @@ return require('packer').startup(function(use)
   use('pangloss/vim-javascript')
   use('peitalin/vim-jsx-typescript')
   use('prettier/vim-prettier')
+  use('prisma/vim-prisma')
   use('tpope/vim-markdown')
 
   use('sotte/presenting.vim')
@@ -100,6 +101,11 @@ return require('packer').startup(function(use)
           width = 192,
           height = 48
         }
+      }
+      require('nvim-test.runners.go-test'):setup {
+        env = {
+          CONFIG_FILE = "/Users/bpapillon/projects/schematic/api/test.env",
+        },
       }
     end
   }
