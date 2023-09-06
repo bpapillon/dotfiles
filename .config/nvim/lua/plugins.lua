@@ -32,6 +32,7 @@ return require('packer').startup(function(use)
 
   use {'neoclide/coc.nvim', branch = 'release'}
   use('cespare/vim-toml')
+  use('sebdah/vim-delve')
   use('fatih/vim-go')
   use('github/copilot.vim')
   use('leafgarland/typescript-vim')
@@ -42,6 +43,11 @@ return require('packer').startup(function(use)
   use('prettier/vim-prettier')
   use('prisma/vim-prisma')
   use('tpope/vim-markdown')
+
+  use({
+    "jakethekoenig/ChatVim",
+    run = "pip install -r requirements.txt"
+  })
 
   use('sotte/presenting.vim')
 

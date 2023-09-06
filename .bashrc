@@ -135,3 +135,9 @@ function gho {
 ### Schematic
 SCHEMATIC_PROJECT_DIR="$HOME/projects/schematic/"
 SCHEMATIC_API_TEST_CONFIG="$HOME/projects/schematic/api/test.env"
+
+
+### Secrets
+if [ -f ~/.bash_secrets ]; then
+    source ~/.bash_secrets
+fi
