@@ -14,7 +14,6 @@ local packer_bootstrap = ensure_packer()
 return require('packer').startup(function(use)
   use("wbthomason/packer.nvim")
 
-  use("dense-analysis/ale")
   use("tpope/vim-commentary")
   use("tpope/vim-fugitive")
   use("tpope/vim-surround")
@@ -26,13 +25,11 @@ return require('packer').startup(function(use)
   use("vim-airline/vim-airline-themes")
 
   use {
-    'nvim-telescope/telescope.nvim', tag = '0.1.0',
+    'nvim-telescope/telescope.nvim', tag = '0.1.4',
     requires = { {'nvim-lua/plenary.nvim'} }
   }
 
   use {'neoclide/coc.nvim', branch = 'release'}
-  use('cespare/vim-toml')
-  use('sebdah/vim-delve')
   use('fatih/vim-go')
   use('github/copilot.vim')
   use('leafgarland/typescript-vim')
@@ -42,7 +39,6 @@ return require('packer').startup(function(use)
   use('peitalin/vim-jsx-typescript')
   use('prettier/vim-prettier')
   use('prisma/vim-prisma')
-  use('tpope/vim-markdown')
 
   use({
     "jakethekoenig/ChatVim",
@@ -113,10 +109,11 @@ return require('packer').startup(function(use)
           CONFIG_FILE = "/Users/bpapillon/projects/schematic/api/test.env",
         },
       }
+      require('nvim-test.runners.jest'):setup {
+        command = "npx dotenv -e test.env -- yarn test",
+      }
     end
   }
-
-  use({ "iamcco/markdown-preview.nvim", run = "cd app && npm install", setup = function() vim.g.mkdp_filetypes = { "markdown" } end, ft = { "markdown" }, })
 
   if packer_bootstrap then
     require('packer').sync()
