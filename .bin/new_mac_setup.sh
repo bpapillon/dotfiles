@@ -78,6 +78,7 @@ check_bin_install "go" || install_with_brew "go"
 check_bin_install "nvm" || install_nvm
 check_bin_install "rust" || install_rust
 
+check_bin_install "bash-completion" || install_with_brew "bash-completion"
 check_bin_install "awslogs" || install_with_brew "awslogs"
 check_bin_install "fd" || install_with_brew "fd"
 check_bin_install "hugo" || install_with_brew "hugo"
@@ -89,6 +90,7 @@ check_bin_install "rbenv" || install_with_brew "rbenv"
 check_bin_install "ripgrep" || install_with_brew "ripgrep"
 check_bin_install "ag" || install_with_brew "the_silver_searcher"
 check_bin_install "yarn" || install_with_npm "yarn"
+check_bin_install "bun" || install_with_curl "bun" "https://bun.sh/install"
 
 check_bin_install "op" || brew install --cask 1password/tap/1password-cli
 check_bin_install "figlet" || install_with_brew "figlet"

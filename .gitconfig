@@ -77,3 +77,9 @@
   path = ~/.gitconfig__local
 [init]
 	defaultBranch = main
+[bash]
+  complete = true
+[rerere]
+	enabled = true
+[url "ssh://git@github.com/"]
+	insteadOf = https://github.com/
