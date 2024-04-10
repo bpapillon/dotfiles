@@ -76,7 +76,7 @@ let g:airline#extensions#ale#enabled = 1
 let g:airline#extensions#tabline#enabled = 1
 
 " CoC extensions
-let g:coc_global_extensions = ['coc-tsserver']
+let g:coc_global_extensions = ['coc-tsserver', 'coc-go']
 
 " Switch buffers with left and right arrow keys
 nnoremap <left> :bp<cr>
@@ -126,45 +126,8 @@ function SqlFormatter()
     map ,f  :%!sqlformat --reindent --keywords upper --identifiers lower -<CR>
 endfunction
 
-""" Golang
+" Go
 
-" disable all linters as that is taken care of by coc.nvim
-let g:go_diagnostics_enabled = 0
-let g:go_metalinter_enabled = []
-
-" don't jump to errors after metalinter is invoked
-let g:go_jump_to_error = 0
-
-" run go imports on file save
-let g:go_fmt_command = "goimports"
-
-" automatically highlight variable your cursor is on
-let g:go_auto_sameids = 0
-
-" syntax highlighting options
-let g:go_highlight_types = 1
-let g:go_highlight_fields = 1
-let g:go_highlight_functions = 1
-let g:go_highlight_function_calls = 1
-let g:go_highlight_operators = 1
-let g:go_highlight_extra_types = 1
-let g:go_highlight_build_constraints = 1
-let g:go_highlight_generate_tags = 1
-
-" show interfaces implemented by type
-autocmd BufEnter *.go nmap <leader>ii  <Plug>(go-implements)
-
-" show function signature
-autocmd BufEnter *.go nmap <leader>i  <Plug>(go-info)
-
-" describe type def
-autocmd BufEnter *.go nmap <leader>ci  <Plug>(go-describe)
-
-" show callers
-autocmd BufEnter *.go nmap <leader>cc  <Plug>(go-callers)
-
-" show references
-nmap <leader>cr <Plug>(coc-references)
-
-" copilot plugin requires node 16 or 17
-" let g:copilot_node_command = '/Users/bpapillon/.nvm/versions/node/v16.15.1/bin/node'
+" format imports on save
+autocmd BufWritePre *.go :silent call CocAction('runCommand', 'editor.action.organizeImport')
+autocmd BufWritePre *.go :silent call CocAction('runCommand', 'editor.action.format')

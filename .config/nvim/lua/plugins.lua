@@ -30,7 +30,7 @@ return require('packer').startup(function(use)
   }
 
   use {'neoclide/coc.nvim', branch = 'release'}
-  use('fatih/vim-go')
+  -- use('fatih/vim-go')
   use('github/copilot.vim')
   use('leafgarland/typescript-vim')
   use('maxmellon/vim-jsx-pretty')
@@ -75,6 +75,7 @@ return require('packer').startup(function(use)
           'make',
           'markdown',
           'markdown_inline',
+          'php',
           'python',
           'regex',
           'ruby',

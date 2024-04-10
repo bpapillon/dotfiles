@@ -8,7 +8,7 @@
 [mergetool]
   keepBackup = true
 [core]
-  editor = vim
+  editor = nvim
   excludesfile = ~/.gitignore_global
 [web]
   browser = google-chrome
