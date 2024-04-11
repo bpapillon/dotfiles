@@ -74,57 +74,45 @@ curl -Ls https://raw.githubusercontent.com/bpapillon/dotfiles/master/.bin/instal
 check_bin_install "brew" || install_with_curl "brew" "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
 brew update
 
+# Go
 check_bin_install "go" || install_with_brew "go"
-check_bin_install "nvm" || install_nvm
-check_bin_install "rust" || install_rust
-
-check_bin_install "bash-completion" || install_with_brew "bash-completion"
-check_bin_install "awslogs" || install_with_brew "awslogs"
-check_bin_install "fd" || install_with_brew "fd"
+check_bin_install "golangci-lint" || install_with_brew "golangci-lint"
 check_bin_install "hugo" || install_with_brew "hugo"
-check_bin_install "jq" || install_with_brew "jq"
-check_bin_install "nvim" || install_with_brew "nvim"
-check_bin_install "psql" || install_with_brew "postgresql"
-check_bin_install "pyenv" || install_with_brew "pyenv"
-check_bin_install "rbenv" || install_with_brew "rbenv"
-check_bin_install "ripgrep" || install_with_brew "ripgrep"
-check_bin_install "ag" || install_with_brew "the_silver_searcher"
+
+# JavaScript
+check_bin_install "nvm" || install_nvm
 check_bin_install "yarn" || install_with_npm "yarn"
+check_bin_install "prettier" || install_with_npm "mintlify"
+check_bin_install "typescript-language-server" || install_with_npm "typescript-language-server"
 check_bin_install "bun" || install_with_curl "bun" "https://bun.sh/install"
 
-check_bin_install "op" || brew install --cask 1password/tap/1password-cli
-check_bin_install "figlet" || install_with_brew "figlet"
+# Postgres
+check_bin_install "psql" || install_with_brew "postgresql"
 check_bin_install "pgcli" || brew tap dbcli/tap && brew install pgcli
 
-eval "$(pyenv init -)"
+# PHP
+check_bin_install "php" || install_with_brew "php"
 
-echo "Setting up notes and projects directories..."
-if [[ ! -f "~/projects" ]]
-then
-  mkdir ~/projects
-fi
-if [[ ! -f "~/notes" ]]
-then
-  git clone git@github.com:bpapillon/notes.git ~/notes/
-fi
+# misc
+check_bin_install "nvim" || install_with_brew "nvim"
+check_bin_install "fd" || install_with_brew "fd"
+check_bin_install "jq" || install_with_brew "jq"
+check_bin_install "ripgrep" || install_with_brew "ripgrep"
+check_bin_install "ag" || install_with_brew "the_silver_searcher"
+check_bin_install "op" || brew install --cask 1password/tap/1password-cli
+check_bin_install "figlet" || install_with_brew "figlet"
+
+# Schematic
+check_bin_install "mintlify" || install_with_npm "mintlify"
+check_bin_install "openapi_generator" || install_with_brew "openapi_generator"
+check_bin_install "pulumi" || install_with_brew "pulumi"
 
 cat << EOF
 Download and install the following apps:
 * [Alfred](https://www.alfredapp.com/) - remember to configure the prompt keystroke after installing
-* [Brave browser](https://brave.com/)
-* [Chrome browser](https://www.google.com/chrome/)
+* [Arc browser](https://arc.net)
 * [Docker for Mac](https://docs.docker.com/docker-for-mac/install/)
 * [Rectangle window manager](https://rectangleapp.com/) - remember to configure the keystrokes after installing
 * [Spotify](https://www.spotify.com/us/download/mac/)
 * [Zoom](https://zoom.us/download#client_4meeting)
-
-Set up your Apple ID, and install the following apps via the App Store:
-* Pocket
-* Twitter
-
-And then some settings to configure:
-* Enable hot corner to lock screen
-* Set Do Not Disturb to "Always On"
-* chrome://settings/content/notifications - disallow sites from asking for permission to send notifications
 EOF
-

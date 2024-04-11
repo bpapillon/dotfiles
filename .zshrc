@@ -1,13 +1,13 @@
-### PS1
+### Prompt
 
-PS1='^\e[0;35m\W\e[m\e[0;36m$(parse_git_branch)\e[m\$ '
-parse_git_branch() {
-    git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
-}
+autoload -Uz vcs_info
+zstyle ':vcs_info:git:*' formats " (%b)"
+
+setopt PROMPT_SUBST
+PROMPT='%{%F{magenta}%}%~%{%f%}$(vcs_info_msg_0_) %# '
 
 ### PATH & other important stuff
 
-export BASH_SILENCE_DEPRECATION_WARNING=1 # Silence warning to change to zsh
 export EDITOR=nvim
 export GOPATH="$HOME/go"
 export PATH=/Applications/Postgres.app/Contents/Versions/latest/bin:/opt/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/sbin:/usr/local/include/:/usr/local/go/bin:$GOPATH/bin:/usr/local/opt/libpq/bin:/usr/local/mysql/bin:/usr/local/mysql/support-files:$HOME/bin:$HOME/.yarn/bin/
@@ -29,8 +29,8 @@ alias vun="vim"
 export HISTCONTROL=ignoredups:erasedups
 export HISTSIZE=100000
 export HISTFILESIZE=100000
-shopt -s histappend
-export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
+setopt HIST_IGNORE_ALL_DUPS
+setopt SHARE_HISTORY
 
 ### Git
 
@@ -39,10 +39,6 @@ alias gd="g d"
 alias gs="g s"
 alias gp="g p"
 alias hoy="git"
-
-if [ -f ~/.git-completion.bash ]; then
-  . ~/.git-completion.bash
-fi
 
 ### Package and version managers
 
@@ -53,7 +49,6 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 if [ -d $HOME/.nvm ]; then
   export NVM_DIR="$HOME/.nvm"
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 fi
 
 # bun
@@ -86,13 +81,12 @@ function gho {
   gh $1 | xargs open
 }
 
-
 ### Schematic
 SCHEMATIC_PROJECT_DIR="$HOME/projects/schematic/"
 SCHEMATIC_API_TEST_CONFIG="$HOME/projects/schematic/api/test.env"
 export PATH=$PATH:$HOME/projects/schematic/developers/bin/
 
 ### Secrets
-if [ -f ~/.bash_secrets ]; then
-    source ~/.bash_secrets
+if [ -f ~/.zsh_secrets ]; then
+    source ~/.zsh_secrets
 fi
