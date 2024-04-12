@@ -1,0 +1,28 @@
+{
+  "go.goplsOptions": {
+    "completeUnimported": true,
+    "staticcheck": true,
+    "hints": {
+      "structtags": true,
+      "compositeLiteralFields": true,
+      "compositeLiteralTypes": true,
+      "constantValues": true,
+      "functionTypeParameters": true,
+      "parameterNames": true,
+      "rangeVariableTypes": true
+    }
+  },
+  "languageserver": {
+    "golang": {
+      "command": "gopls",
+      "rootPatterns": ["go.mod", ".vim/", ".git/", ".hg/"],
+      "filetypes": ["go"]
+    },
+    "typescript": {
+      "command": "typescript-language-server",
+      "args": ["--stdio"],
+      "rootPatterns": ["package.json", "tsconfig.json", "jsconfig.json", ".git/", ".hg/"],
+      "filetypes": ["typescript", "typescriptreact", "typescript.tsx"]
+    }
+  }
+}
