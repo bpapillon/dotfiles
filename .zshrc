@@ -1,10 +1,13 @@
 ### Prompt
 
 autoload -Uz vcs_info
-zstyle ':vcs_info:git:*' formats " (%b)"
+precmd() { vcs_info }
+
+zstyle ':vcs_info:git:*' formats '(%b)'
+zstyle ':vcs_info:*' enable git
 
 setopt PROMPT_SUBST
-PROMPT='%{%F{magenta}%}%~%{%f%}$(vcs_info_msg_0_) %# '
+PROMPT='^%F{magenta}%1~%f %F{cyan}${vcs_info_msg_0_}%f$ '
 
 ### PATH & other important stuff
 
@@ -45,15 +48,18 @@ alias hoy="git"
 # homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
-# nvm
+# javascript
 if [ -d $HOME/.nvm ]; then
   export NVM_DIR="$HOME/.nvm"
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 fi
 
-# bun
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
 BUN_INSTALL="/Users/bpapillon/.bun"
 PATH="$BUN_INSTALL/bin:$PATH"
+
+[ -s "/Users/bpapillon/.bun/_bun" ] && source "/Users/bpapillon/.bun/_bun"
 
 ### GitHub
 

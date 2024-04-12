@@ -33,9 +33,10 @@ install_with_npm() {
 }
 
 install_nvm() {
-  CURL_URL="https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh"
+  INSTALL_URL="https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh"
   echo "Installing nvm with curl from ${CURL_URL}...\n"
   curl -o- $CURL_URL | bash
+  nvm install 20
 }
 
 install_rust() {
@@ -43,12 +44,6 @@ install_rust() {
   echo "Installing nvm with curl from ${CURL_URL}...\n"
   curl –proto '=https' –tlsv1.2 -sSf $CURL_URL | sh
 }
-
-if [ "$SHELL" != "/bin/bash" ]; then
-  echo "Setting bash as default shell..."
-  chsh -s /bin/bash
-  source ~/.bashrc
-fi
 
 echo "Checking git and xcode installation..."
 git --version # Will prompt for xcode tools setup if needed
@@ -106,13 +101,3 @@ check_bin_install "figlet" || install_with_brew "figlet"
 check_bin_install "mintlify" || install_with_npm "mintlify"
 check_bin_install "openapi_generator" || install_with_brew "openapi_generator"
 check_bin_install "pulumi" || install_with_brew "pulumi"
-
-cat << EOF
-Download and install the following apps:
-* [Alfred](https://www.alfredapp.com/) - remember to configure the prompt keystroke after installing
-* [Arc browser](https://arc.net)
-* [Docker for Mac](https://docs.docker.com/docker-for-mac/install/)
-* [Rectangle window manager](https://rectangleapp.com/) - remember to configure the keystrokes after installing
-* [Spotify](https://www.spotify.com/us/download/mac/)
-* [Zoom](https://zoom.us/download#client_4meeting)
-EOF
