@@ -29,16 +29,21 @@ return require('packer').startup(function(use)
     requires = { {'nvim-lua/plenary.nvim'} }
   }
 
-  use {'neoclide/coc.nvim', branch = 'release'}
-  -- use('fatih/vim-go')
+  use {
+    'neoclide/coc.nvim',
+    branch = 'release',
+    run = function()
+      vim.fn['coc#util#install']()
+    end
+  }
   use('github/copilot.vim')
   use('leafgarland/typescript-vim')
-  use('maxmellon/vim-jsx-pretty')
-  use('mxw/vim-jsx')
-  use('pangloss/vim-javascript')
-  use('peitalin/vim-jsx-typescript')
+  -- use('maxmellon/vim-jsx-pretty')
+  -- use('mxw/vim-jsx')
+  -- use('pangloss/vim-javascript')
+  -- use('peitalin/vim-jsx-typescript')
   use('prettier/vim-prettier')
-  use('prisma/vim-prisma')
+  use('folke/trouble.nvim')
 
   use({
     "jakethekoenig/ChatVim",
@@ -58,6 +63,7 @@ return require('packer').startup(function(use)
           'bash',
           'cmake',
           'comment',
+          'csharp',
           'css',
           'dockerfile',
           'gitignore',
@@ -107,7 +113,7 @@ return require('packer').startup(function(use)
       }
       require('nvim-test.runners.go-test'):setup {
         env = {
-          CONFIG_FILE = "/Users/bpapillon/projects/schematic/api/test.env",
+          CONFIG_FILE = "/Users/bpapillon/projects/schematic/schematic-api/test.env",
         },
       }
       require('nvim-test.runners.jest'):setup {

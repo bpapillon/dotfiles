@@ -12,8 +12,7 @@ PROMPT='^%F{magenta}%1~%f %F{cyan}${vcs_info_msg_0_}%f$ '
 ### PATH & other important stuff
 
 export EDITOR=nvim
-export GOPATH="$HOME/go"
-export PATH=/Applications/Postgres.app/Contents/Versions/latest/bin:/opt/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/sbin:/usr/local/include/:/usr/local/go/bin:$GOPATH/bin:/usr/local/opt/libpq/bin:/usr/local/mysql/bin:/usr/local/mysql/support-files:$HOME/bin:$HOME/.yarn/bin/
+export PATH=/opt/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/sbin:/usr/local/include/:$HOME/bin:$HOME/.local/bin
 
 ### Misc aliases
 
@@ -30,37 +29,58 @@ alias vun="vim"
 
 ### History
 
-export HISTCONTROL=ignoredups:erasedups
-export HISTSIZE=100000
-export HISTFILESIZE=100000
-setopt HIST_IGNORE_ALL_DUPS
-setopt SHARE_HISTORY
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=10000000
+SAVEHIST=10000000
+HISTORY_IGNORE="(ls|cd|pwd|exit|cd)*"
+
+setopt EXTENDED_HISTORY      # Write the history file in the ':start:elapsed;command' format.
+setopt INC_APPEND_HISTORY    # Write to the history file immediately, not when the shell exits.
+setopt SHARE_HISTORY         # Share history between all sessions.
+setopt HIST_IGNORE_DUPS      # Do not record an event that was just recorded again.
+setopt HIST_IGNORE_ALL_DUPS  # Delete an old recorded event if a new event is a duplicate.
+setopt HIST_IGNORE_SPACE     # Do not record an event starting with a space.
+setopt HIST_SAVE_NO_DUPS     # Do not write a duplicate event to the history file.
+setopt HIST_VERIFY           # Do not execute immediately upon history expansion.
+setopt APPEND_HISTORY        # append to history file (Default)
+setopt HIST_NO_STORE         # Don't store history commands
+setopt HIST_REDUCE_BLANKS    # Remove superfluous blanks from each command line being added to the history.
 
 ### Git
 
 alias g="git"
+alias gb="g b"
 alias gd="g d"
-alias gs="g s"
 alias gp="g p"
-alias hoy="git"
+alias gs="g s"
 
-### Package and version managers
+### Language support and package managers
 
-# homebrew
+# Go
+export GOPATH="$HOME/go"
+export PATH=$PATH:/go/bin:$GOPATH/bin
+
+# Homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
-# javascript
+# NVM
 if [ -d $HOME/.nvm ]; then
   export NVM_DIR="$HOME/.nvm"
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 fi
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-BUN_INSTALL="/Users/bpapillon/.bun"
+# Bun
+BUN_INSTALL="$HOME/.bun"
 PATH="$BUN_INSTALL/bin:$PATH"
-
 [ -s "/Users/bpapillon/.bun/_bun" ] && source "/Users/bpapillon/.bun/_bun"
+
+# Yarn
+export PATH=$PATH:$HOME/.yarn/bin/
+
+# Dotnet
+export DOTNET_ROOT=/usr/local/share/dotnet6
+export PATH=$PATH:$DOTNET_ROOT
 
 ### GitHub
 
@@ -89,11 +109,13 @@ function gho {
 }
 
 ### Schematic
+
 SCHEMATIC_PROJECT_DIR="$HOME/projects/schematic/"
 SCHEMATIC_API_TEST_CONFIG="$HOME/projects/schematic/api/test.env"
 export PATH=$PATH:$HOME/projects/schematic/developers/bin/
 
 ### Secrets
+
 if [ -f ~/.zsh_secrets ]; then
     source ~/.zsh_secrets
 fi

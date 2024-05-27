@@ -1,4 +1,10 @@
 {
+  "coc.preferences.extensionUpdateCheck": "daily",
+  "coc.extensions": [
+    "coc-go",
+    "coc-pyright",
+    "coc-tsserver"
+  ],
   "go.goplsOptions": {
     "completeUnimported": true,
     "staticcheck": true,
@@ -23,6 +29,54 @@
       "args": ["--stdio"],
       "rootPatterns": ["package.json", "tsconfig.json", "jsconfig.json", ".git/", ".hg/"],
       "filetypes": ["typescript", "typescriptreact", "typescript.tsx"]
+    },
+    "csharp-ls": {
+      "command": "omnisharp",
+      "args": ["-lsp"],
+      "filetypes": ["cs"],
+      "rootPatterns": [".git"]
+    },
+    "python": {
+      "command": "pylsp",
+      "args": ["--stdio"],
+      "filetypes": ["python"],
+      "settings": {
+        "pylsp": {
+          "plugins": {
+            "pylint": {
+              "enabled": true
+            },
+            "flake8": {
+              "enabled": true
+            },
+            "pycodestyle": {
+              "enabled": false
+            },
+            "mccabe": {
+              "enabled": false
+            },
+            "pyflakes": {
+              "enabled": false
+            },
+            "yapf": {
+              "enabled": false
+            },
+            "black": {
+              "enabled": true
+            },
+            "pydocstyle": {
+              "enabled": true
+            },
+            "autopep8": {
+              "enabled": false
+            }
+          }
+        }
+      }
     }
-  }
+  },
+  "python.formatting.provider": "black",
+  "python.linting.enabled": true,
+  "python.linting.pylintEnabled": true,
+  "python.linting.flake8Enabled": true
 }

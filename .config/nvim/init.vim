@@ -86,7 +86,7 @@ nnoremap <right> :bn<cr>
 function GitHub(cmd)
   let l:filename = @%
   let l:lineno = "\\#L" . line('.')
-  execute "!source ~/.bashrc && " . a:cmd . " " . l:filename . l:lineno
+  execute "!source ~/.zshrc && " . a:cmd . " " . l:filename . l:lineno
 endfunction
 command GitHubCopy call GitHub("ghc")
 command GitHubOpen call GitHub("gho")
