@@ -77,7 +77,7 @@ check_bin_install "hugo" || install_with_brew "hugo"
 # JavaScript
 check_bin_install "nvm" || install_nvm
 check_bin_install "yarn" || install_with_npm "yarn"
-check_bin_install "prettier" || install_with_npm "mintlify"
+check_bin_install "prettier" || install_with_npm "prettier"
 check_bin_install "typescript-language-server" || install_with_npm "typescript-language-server"
 check_bin_install "bun" || install_with_curl "bun" "https://bun.sh/install"
 

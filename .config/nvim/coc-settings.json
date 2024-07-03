@@ -30,12 +30,6 @@
       "rootPatterns": ["package.json", "tsconfig.json", "jsconfig.json", ".git/", ".hg/"],
       "filetypes": ["typescript", "typescriptreact", "typescript.tsx"]
     },
-    "csharp-ls": {
-      "command": "omnisharp",
-      "args": ["-lsp"],
-      "filetypes": ["cs"],
-      "rootPatterns": [".git"]
-    },
     "python": {
       "command": "pylsp",
       "args": ["--stdio"],

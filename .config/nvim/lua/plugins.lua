@@ -38,17 +38,8 @@ return require('packer').startup(function(use)
   }
   use('github/copilot.vim')
   use('leafgarland/typescript-vim')
-  -- use('maxmellon/vim-jsx-pretty')
-  -- use('mxw/vim-jsx')
-  -- use('pangloss/vim-javascript')
-  -- use('peitalin/vim-jsx-typescript')
   use('prettier/vim-prettier')
   use('folke/trouble.nvim')
-
-  use({
-    "jakethekoenig/ChatVim",
-    run = "pip install -r requirements.txt"
-  })
 
   use('sotte/presenting.vim')
 
@@ -62,8 +53,8 @@ return require('packer').startup(function(use)
         ensure_installed = {
           'bash',
           'cmake',
+          'c_sharp',
           'comment',
-          'csharp',
           'css',
           'dockerfile',
           'gitignore',
