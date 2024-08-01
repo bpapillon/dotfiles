@@ -59,6 +59,10 @@ if has('autocmd')
 
   " Enable automatic formatting with Prettier on file save
   autocmd BufWritePre *.js,*.jsx,*.ts,*.tsx,*.json,*.html,*.css,*.scss,*.md :Prettier
+
+  " Autoformat Go files on save
+  autocmd BufWritePre *.go :silent call CocAction('runCommand', 'editor.action.organizeImport')
+  autocmd BufWritePre *.go :silent call CocAction('runCommand', 'editor.action.format')
 endif
 
 " NERDTree auto-start and keystroke mappings
@@ -99,35 +103,5 @@ nnoremap <Leader>n :TestNearest<CR>
 " Markdown syntax highlighting
 let g:markdown_fenced_languages = ['html', 'go=go', 'javascript', 'js=javascript', 'python', 'sql', 'ts=typescript', 'typescript', 'vim', 'yaml']
 
-" ChatVim
-" Start a new empty chat file with `:Chat`
-" Start a named chat file with `:Chat name`
-function! Chat(suffix)
-  let file_suffix = ''
-  let date_suffix = strftime('%Y%m%d')
-
-  if empty(a:suffix)
-    let file_suffix = date_suffix . '_' . strftime('%H%M%S')
-  else
-    let file_suffix = date_suffix . '_' . a:suffix
-  endif
-
-  execute 'vsplit ~/projects/chat/' . file_suffix . '.md'
-endfunction
-
-command! -nargs=? Chat call Chat('<args>')
-
-" SQL format
-autocmd FileType sql call SqlFormatter()
-augroup end
-function SqlFormatter()
-    set noai
-    " set mappings...
-    map ,f  :%!sqlformat --reindent --keywords upper --identifiers lower -<CR>
-endfunction
-
-" Go
-
-" format imports on save
-autocmd BufWritePre *.go :silent call CocAction('runCommand', 'editor.action.organizeImport')
-autocmd BufWritePre *.go :silent call CocAction('runCommand', 'editor.action.format')
+" Terminal mappings
+nnoremap <C-x> :vsp<CR>:term<CR>
