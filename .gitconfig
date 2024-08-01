@@ -39,6 +39,7 @@
   ca = commit -a
   cam = commit -am
   cb = checkout -b
+  cc = commit --allow-empty-message -m \"\"
   ch = cherry -v
   cm = commit -m
   cmm = commit --amend -m
