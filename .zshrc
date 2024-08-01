@@ -22,6 +22,7 @@ alias dcu="docker-compose up -d"
 alias grep="grep --color=always"
 alias ll="ls -al"
 alias ls="ls -G"
+alias notes="cd ~/notes && v ."
 alias v="nvim"
 alias vi="nvim"
 alias vim="nvim"
@@ -79,8 +80,13 @@ PATH="$BUN_INSTALL/bin:$PATH"
 export PATH=$PATH:$HOME/.yarn/bin/
 
 # Dotnet
-export DOTNET_ROOT=/usr/local/share/dotnet6
+export DOTNET_ROOT=/usr/local/share/dotnet
 export PATH=$PATH:$DOTNET_ROOT
+
+# Java
+export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
+export CPPFLAGS="-I/opt/homebrew/opt/openjdk/include"
+export JAVA_HOME="/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home"
 
 ### GitHub
 
