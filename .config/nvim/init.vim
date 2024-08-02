@@ -4,6 +4,7 @@ let &packpath = &runtimepath
 lua require('plugins')
 lua require('mappings')
 lua require('coc')
+lua require('llm')
 
 " Colors
 syntax enable " syntax highlighting

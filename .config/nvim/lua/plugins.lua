@@ -41,6 +41,8 @@ return require('packer').startup(function(use)
   use('prettier/vim-prettier')
   use('folke/trouble.nvim')
 
+  use("nvim-lua/plenary.nvim") -- used by lua/llm.lua
+
   use('sotte/presenting.vim')
 
   use({
