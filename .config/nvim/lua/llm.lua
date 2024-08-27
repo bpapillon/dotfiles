@@ -63,7 +63,7 @@ function call_llm()
   end
 
   -- Start the job
-  local job_id = vim.fn.jobstart({'llm', 'prompt', '-m', LLM_MODEL}, {
+  local job_id = vim.fn.jobstart({'llm', 'prompt', '--continue', '-m', LLM_MODEL}, {
     on_stdout = function(_, data)
       if data and #data > 1 or (data[1] and data[1] ~= "") then
         append_to_buffer(table.concat(data, "\n"))
