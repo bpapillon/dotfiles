@@ -125,3 +125,23 @@ export PATH=$PATH:$HOME/projects/schematic/developers/bin/
 if [ -f ~/.zsh_secrets ]; then
     source ~/.zsh_secrets
 fi
+
+
+### Helper
+
+function kill_process_on_port() {
+  local PORT=$1
+  if [ -z "$PORT" ]; then
+    echo "Usage: kill_process_on_port <port>"
+    return 1
+  fi
+
+  PID=$(lsof -ti:$PORT)
+  if [ -z "$PID" ]; then
+    echo "No process running on port $PORT"
+  else
+    kill -9 $PID
+    echo "Killed process $PID running on port $PORT"
+  fi
+}
+alias killport="kill_process_on_port"
