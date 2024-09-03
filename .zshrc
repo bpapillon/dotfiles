@@ -130,18 +130,25 @@ fi
 ### Helper
 
 function kill_process_on_port() {
-  local PORT=$1
-  if [ -z "$PORT" ]; then
-    echo "Usage: kill_process_on_port <port>"
+  if [ $# -eq 0 ]; then
+    echo "Usage: kill_process_on_port <port1> [port2] [port3] ..."
     return 1
   fi
 
-  PID=$(lsof -ti:$PORT)
-  if [ -z "$PID" ]; then
-    echo "No process running on port $PORT"
-  else
-    kill -9 $PID
-    echo "Killed process $PID running on port $PORT"
-  fi
+  for PORT in "$@"
+  do
+    if ! [[ "$PORT" =~ ^[0-9]+$ ]]; then
+      echo "Invalid port number: $PORT"
+      continue
+    fi
+
+    PID=$(lsof -ti:$PORT)
+    if [ -z "$PID" ]; then
+      echo "No process running on port $PORT"
+    else
+      kill -9 $PID
+      echo "Killed process $PID running on port $PORT"
+    fi
+  done
 }
 alias killport="kill_process_on_port"
