@@ -16,7 +16,7 @@ export PATH=/Applications/Postgres.app/Contents/Versions/latest/bin:/opt/local/b
 
 alias config="/usr/bin/git --git-dir=/Users/bpapillon/.cfg/ --work-tree=/Users/bpapillon"
 alias dc="docker-compose"
-alias grep="grep --color=always"
+alias grep="grep --color=never"
 alias ll="ls -al"
 alias ls="ls -G"
 alias v="nvim"

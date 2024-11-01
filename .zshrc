@@ -19,7 +19,7 @@ export PATH=/opt/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/loc
 alias config="/usr/bin/git --git-dir=/Users/bpapillon/.cfg/ --work-tree=/Users/bpapillon"
 alias dc="docker-compose"
 alias dcu="docker-compose up -d"
-alias grep="grep --color=always"
+alias grep="grep --color=never"
 alias ll="ls -al"
 alias ls="ls -G"
 alias notes="cd ~/notes && v ."
