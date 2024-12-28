@@ -3,7 +3,8 @@
   "coc.extensions": [
     "coc-go",
     "coc-pyright",
-    "coc-tsserver"
+    "coc-tsserver",
+    "coc-java"
   ],
   "go.goplsOptions": {
     "completeUnimported": true,
@@ -72,5 +73,30 @@
   "python.formatting.provider": "black",
   "python.linting.enabled": true,
   "python.linting.pylintEnabled": true,
-  "python.linting.flake8Enabled": true
+  "python.linting.flake8Enabled": true,
+  "java": {
+    "jdt": {
+      "ls": {
+        "vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx1G -Xms100m"
+      }
+    },
+    "errors": {
+      "incompleteClasspath": {
+        "severity": "warning"
+      }
+    },
+    "configuration": {
+      "updateBuildConfiguration": "automatic"
+    },
+    "trace": {
+      "server": "off"
+    },
+    "format": {
+      "enabled": true,
+      "settings": {
+        "profile": "GoogleStyle",
+        "url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml"
+      }
+    }
+  }
 }

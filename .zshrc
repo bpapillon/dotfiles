@@ -22,11 +22,10 @@ alias dcu="docker-compose up -d"
 alias grep="grep --color=never"
 alias ll="ls -al"
 alias ls="ls -G"
-alias notes="cd ~/notes && v ."
 alias v="nvim"
 alias vi="nvim"
 alias vim="nvim"
-alias vun="vim"
+alias vun="nvim"
 
 ### History
 
@@ -83,14 +82,9 @@ export PATH=$PATH:$HOME/.yarn/bin/
 export DOTNET_ROOT=/usr/local/share/dotnet
 export PATH=$PATH:$DOTNET_ROOT
 
-# Java
-export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
-export CPPFLAGS="-I/opt/homebrew/opt/openjdk/include"
-export JAVA_HOME="/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home"
-
 ### GitHub
 
-function gh {
+function gh_url {
   remote_url=$(git remote get-url origin)
   if [[ $remote_url != *"github.com"* ]]; then
     echo "Not a GitHub remote"
@@ -108,10 +102,10 @@ function gh {
   fi
 }
 function ghc {
-  gh $1 | pbcopy
+  gh_url $1 | pbcopy
 }
 function gho {
-  gh $1 | xargs open
+  gh_url $1 | xargs open
 }
 
 ### Schematic
@@ -152,3 +146,7 @@ function kill_process_on_port() {
   done
 }
 alias killport="kill_process_on_port"
+
+# Java
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
