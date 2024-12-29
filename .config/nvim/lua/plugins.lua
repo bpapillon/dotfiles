@@ -12,18 +12,18 @@ end
 local packer_bootstrap = ensure_packer()
 
 return require('packer').startup(function(use)
-  use("wbthomason/packer.nvim")
+  use('wbthomason/packer.nvim')
 
-  use("tpope/vim-commentary")
-  use("tpope/vim-fugitive")
-  use("tpope/vim-surround")
+  use('tpope/vim-commentary')
+  use('tpope/vim-fugitive')
+  use('tpope/vim-surround')
 
-  use("preservim/nerdtree")
-  use("Xuyuanp/nerdtree-git-plugin")
-  use("ctrlpvim/ctrlp.vim")
+  use('preservim/nerdtree')
+  use('Xuyuanp/nerdtree-git-plugin')
+  use('ctrlpvim/ctrlp.vim')
 
-  use("vim-airline/vim-airline")
-  use("vim-airline/vim-airline-themes")
+  use('vim-airline/vim-airline')
+  use('vim-airline/vim-airline-themes')
 
   use {
     'nvim-telescope/telescope.nvim', tag = '0.1.4',
@@ -42,7 +42,7 @@ return require('packer').startup(function(use)
   use('prettier/vim-prettier')
   use('folke/trouble.nvim')
 
-  use("nvim-lua/plenary.nvim") -- used by lua/llm.lua
+  use('nvim-lua/plenary.nvim') -- used by lua/llm.lua
 
   use('sotte/presenting.vim')
 
@@ -96,22 +96,22 @@ return require('packer').startup(function(use)
   })
 
   use {
-    "klen/nvim-test",
+    'klen/nvim-test',
     config = function()
       require('nvim-test').setup {
         termOpts = {
-          direction = "float",
+          direction = 'float',
           width = 192,
           height = 48
         }
       }
       require('nvim-test.runners.go-test'):setup {
         env = {
-          CONFIG_FILE = "/Users/bpapillon/projects/schematic/schematic-api/test.env",
+          CONFIG_FILE = '/Users/bpapillon/projects/schematic/schematic-api/test.env',
         },
       }
       require('nvim-test.runners.jest'):setup {
-        command = "npx dotenv -e test.env -- yarn test",
+        command = 'npx dotenv -e test.env -- yarn test',
       }
     end
   }
