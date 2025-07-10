@@ -69,6 +69,9 @@ curl -Ls https://raw.githubusercontent.com/bpapillon/dotfiles/master/.bin/instal
 check_bin_install "brew" || install_with_curl "brew" "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
 brew update
 
+# Mac apps
+brew install --cask 1password arc figma ghostty kap little-snitch micro-snitch orbstack rectangle slack spotify zoom
+
 # Go
 check_bin_install "go" || install_with_brew "go"
 check_bin_install "golangci-lint" || install_with_brew "golangci-lint"
@@ -88,6 +91,9 @@ check_bin_install "pgcli" || brew tap dbcli/tap && brew install pgcli
 # PHP
 check_bin_install "php" || install_with_brew "php"
 
+# Python
+check_bin_install "uv" || install_with_curl "https://astral.sh/uv/install.sh"
+
 # misc
 check_bin_install "nvim" || install_with_brew "nvim"
 check_bin_install "fd" || install_with_brew "fd"
@@ -98,6 +104,5 @@ check_bin_install "op" || brew install --cask 1password/tap/1password-cli
 check_bin_install "figlet" || install_with_brew "figlet"
 
 # Schematic
-check_bin_install "mintlify" || install_with_npm "mintlify"
 check_bin_install "openapi_generator" || install_with_brew "openapi_generator"
 check_bin_install "pulumi" || install_with_brew "pulumi"
