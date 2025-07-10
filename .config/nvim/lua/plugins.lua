@@ -44,8 +44,6 @@ return require('packer').startup(function(use)
 
   use('nvim-lua/plenary.nvim') -- used by lua/llm.lua
 
-  use('sotte/presenting.vim')
-
   use({
     'nvim-treesitter/nvim-treesitter',
     run = function()
@@ -111,10 +109,12 @@ return require('packer').startup(function(use)
         },
       }
       require('nvim-test.runners.jest'):setup {
-        command = 'npx dotenv -e test.env -- yarn test',
+        command = 'yarn test',
       }
     end
   }
+
+  use({ "iamcco/markdown-preview.nvim", run = "cd app && npm install", setup = function() vim.g.mkdp_filetypes = { "markdown" } end, ft = { "markdown" }, })
 
   if packer_bootstrap then
     require('packer').sync()

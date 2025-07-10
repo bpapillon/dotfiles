@@ -4,8 +4,12 @@
     "coc-go",
     "coc-pyright",
     "coc-tsserver",
-    "coc-java"
+    "coc-java",
+    "coc-sql"
   ],
+  "sql.database": "postgresql",
+  "sql.formatOnSave": true,
+  "sql.lintOnSave": true,
   "go.goplsOptions": {
     "completeUnimported": true,
     "staticcheck": true,
@@ -24,12 +28,6 @@
       "command": "gopls",
       "rootPatterns": ["go.mod", ".vim/", ".git/", ".hg/"],
       "filetypes": ["go"]
-    },
-    "typescript": {
-      "command": "typescript-language-server",
-      "args": ["--stdio"],
-      "rootPatterns": ["package.json", "tsconfig.json", "jsconfig.json", ".git/", ".hg/"],
-      "filetypes": ["typescript", "typescriptreact", "typescript.tsx"]
     },
     "python": {
       "command": "pylsp",
