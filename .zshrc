@@ -150,3 +150,6 @@ alias killport="kill_process_on_port"
 # Java
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+# Claude Code
+alias claude="/Users/bpapillon/.claude/local/claude"

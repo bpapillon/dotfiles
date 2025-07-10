@@ -3,3 +3,5 @@
 *.swp
 *.swo
 /coverage/
+settings.local.json
+.linear.toml

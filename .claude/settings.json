@@ -1,0 +1,36 @@
+{
+  "model": "opus",
+  "permissions": {
+    "allow": [
+      "Bash(awk:*)",
+      "Bash(diff:*)",
+      "Bash(docker logs:*)",
+      "Bash(find:*)",
+      "Bash(gh pr view:*)",
+      "Bash(grep:*)",
+      "Bash(head:*)",
+      "Bash(linear issue view:*)",
+      "Bash(linear:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Bash(rg:*)",
+      "Bash(sed:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)"
+    ],
+    "deny": []
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/ntfy-notifier.sh notification"
+          }
+        ]
+      }
+    ]
+  }
+}
