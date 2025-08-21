@@ -1,25 +1,27 @@
 {
-  "model": "opus",
   "permissions": {
     "allow": [
       "Bash(awk:*)",
       "Bash(diff:*)",
       "Bash(docker logs:*)",
       "Bash(find:*)",
-      "Bash(gh pr view:*)",
+      "Bash(gh:*)",
       "Bash(grep:*)",
       "Bash(head:*)",
-      "Bash(linear issue view:*)",
       "Bash(linear:*)",
       "Bash(ls:*)",
       "Bash(mkdir:*)",
       "Bash(rg:*)",
       "Bash(sed:*)",
+      "Bash(~/.claude/scripts/*)",
+      "Bsh(git diff:*)",
       "WebFetch(domain:github.com)",
-      "WebFetch(domain:raw.githubusercontent.com)"
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:uploads.linear.app)"
     ],
     "deny": []
   },
+  "model": "opus",
   "hooks": {
     "Stop": [
       {
@@ -27,10 +29,17 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/ntfy-notifier.sh notification"
+            "command": "~/.claude/scripts/cleanup-comments.sh"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/ntfy-notifier.sh notification"
           }
         ]
       }
     ]
+  },
+  "feedbackSurveyState": {
+    "lastShownTime": 1754060237444
   }
 }
