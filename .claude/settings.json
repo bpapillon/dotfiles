@@ -1,6 +1,7 @@
 {
   "permissions": {
     "allow": [
+      "Bash(/Users/bpapillon/.claude/scripts/*)",
       "Bash(awk:*)",
       "Bash(diff:*)",
       "Bash(docker logs:*)",

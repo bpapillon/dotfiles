@@ -35,7 +35,7 @@ First, check if a Linear ticket ID was provided as an argument. If not, try to e
 You can also look for a Github PR dscription using the following script:
 
 ```bash
-~/.claude/scripts/fetch_github_pr.sh
+~/.claude/scripts/fetch-github-pr.sh
 ```
 
 The Github PR may contain some additional information about the requirements or implementation, and may be particularly useful in the case where a Linear ticket is not present.
@@ -43,7 +43,7 @@ The Github PR may contain some additional information about the requirements or 
 If a linear ticket was found:
 
 - Get the issue details including comments using: `linear issue view {ticket-id}`
-- Look for any Sentry links in the issue description or comments. If found, extract the Sentry issue ID and fetch the data using: `~/.claude/scripts/fetch_sentry_data.sh "{sentry-issue-id}" "$SENTRY_API_TOKEN"`
+- Look for any Sentry links in the issue description or comments. If found, extract the Sentry issue ID and fetch the data using: `~/.claude/scripts/fetch-sentry-data.sh "{sentry-issue-id}" "$SENTRY_API_TOKEN"`
 - How well do the changes fulfill the requirements from the Linear ticket?
 
 If a Linear ticket cannot be found, you can prompt me for additional information about the requirements.

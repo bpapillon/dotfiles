@@ -2,9 +2,7 @@
 # Prompt Claude to clean up unnecessary comments after modifying code
 
 # Check if we're in a git repository
-if ! git rev-parse --git-dir > /dev/null 2>&1; then
-    exit 0
-fi
+git rev-parse --git-dir > /dev/null 2>&1 || exit 0
 
 # Check if any source files have been modified
 MODIFIED_FILES=$(git diff --name-only HEAD 2>/dev/null | head -30)
@@ -51,5 +49,4 @@ echo "• TODO/FIXME comments"
 echo ""
 echo "Review and clean up comments in the modified files, then confirm when done."
 
-# Exit with status 1 to send this as a prompt to Claude
-exit 1
+exit 0
