@@ -114,7 +114,44 @@ return require('packer').startup(function(use)
     end
   }
 
-  use({ "iamcco/markdown-preview.nvim", run = "cd app && npm install", setup = function() vim.g.mkdp_filetypes = { "markdown" } end, ft = { "markdown" }, })
+  use({
+    "iamcco/markdown-preview.nvim",
+    run = function() vim.fn["mkdp#util#install"]() end,
+    ft = { "markdown" },
+    setup = function()
+      local mm = {
+        theme = "dark",
+        darkMode = true,
+        securityLevel = "loose",
+        flowchart = {
+          curve = "basis",
+          nodeSpacing = 96,
+          rankSpacing = 108,
+          htmlLabels = false,
+          useMaxWidth = true,
+          padding = 16,
+        },
+        themeVariables = {
+          primaryColor = "#141922",       -- node fill
+          primaryTextColor = "#e6e7eb",   -- node text
+          primaryBorderColor = "#303744", -- node stroke
+          lineColor = "#8a93a3",
+          clusterBkg = "#0b0f14",
+          clusterBorder = "#22303c",
+          fontFamily = "Inter, ui-sans-serif, system-ui",
+          fontSize   = "18px",
+        },
+      }
+
+      vim.g.mkdp_filetypes = { "markdown" }
+      vim.g.mkdp_preview_options = {
+        mermaid = mm,
+        maid    = mm,
+      }
+
+      vim.g.mkdp_markdown_css = vim.fn.expand("~/.config/nvim/markdown-preview.css")
+    end,
+  })
 
   if packer_bootstrap then
     require('packer').sync()
