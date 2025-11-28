@@ -153,3 +153,4 @@ export SDKMAN_DIR="$HOME/.sdkman"
 
 # Claude Code
 alias claude="/Users/bpapillon/.claude/local/claude"
+alias evilclaude="claude --dangerously-skip-permissions"
