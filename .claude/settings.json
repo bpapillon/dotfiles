@@ -22,7 +22,6 @@
     ],
     "deny": []
   },
-  "model": "opus",
   "hooks": {
     "Stop": [
       {
@@ -31,15 +30,16 @@
           {
             "type": "command",
             "command": "~/.claude/scripts/cleanup-comments.sh"
-          },
-          {
-            "type": "command",
-            "command": "~/.claude/scripts/ntfy-notifier.sh notification"
           }
         ]
       }
     ]
   },
+  "enabledPlugins": {
+    "gopls-lsp@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true
+  },
+  "alwaysThinkingEnabled": true,
   "feedbackSurveyState": {
     "lastShownTime": 1754060237444
   }

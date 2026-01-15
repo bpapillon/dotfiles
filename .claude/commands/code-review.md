@@ -1,3 +1,5 @@
+ultrathink
+
 Use `git diff main...HEAD` to get the changes on the current branch relative to the main branch; we only take into account changes on the current branch. Please do not make any comments about existing code that is unchanged.
 
 **PART 1**
@@ -28,11 +30,11 @@ Security:
 
 **PART 2**
 
-Attempt ot get some information about the requirements of the PR.
+Attempt to get some information about the requirements of the PR.
 
 First, check if a Linear ticket ID was provided as an argument. If not, try to extract it from the current git branch name (which often follows the pattern {username}/{linear-ticket}-{title}).
 
-You can also look for a Github PR dscription using the following script:
+You can also look for a Github PR description using the following script:
 
 ```bash
 ~/.claude/scripts/fetch-github-pr.sh
