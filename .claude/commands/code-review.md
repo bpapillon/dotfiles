@@ -1,5 +1,3 @@
-ultrathink
-
 Use `git diff main...HEAD` to get the changes on the current branch relative to the main branch; we only take into account changes on the current branch. Please do not make any comments about existing code that is unchanged.
 
 **PART 1**
