@@ -62,6 +62,7 @@
   rbc = rebase --continue
   rh = reset HEAD
   rsh = reset --soft HEAD~1
+  rsr = reset --hard @{u} # Reset to remote
   s = status .
   sh = show
   st = stash
