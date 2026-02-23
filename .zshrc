@@ -152,5 +152,4 @@ export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
 # Claude Code
-alias claude="/Users/bpapillon/.claude/local/claude"
 alias evilclaude="claude --dangerously-skip-permissions"
