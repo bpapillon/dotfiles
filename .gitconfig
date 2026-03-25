@@ -35,6 +35,7 @@
   bd = branch -D
   bl = blame
   branch-clean = !git branch | grep -v \\* | grep -v $(git def) | xargs git branch -D # Remove all local branches except current and default branches
+  cleanup = "!git fetch --prune && gone=$(git branch -vv | grep ': gone]' | sed 's/^[* +]*//' | awk '{print $1}') && [ -z \"$gone\" ] && echo 'No gone branches.' && exit 0; echo \"$gone\" | while read branch; do wt=$(git worktree list --porcelain | awk -v b=\"refs/heads/$branch\" '/^worktree /{w=substr($0,10)} /^branch /{if($2==b) print w}'); [ -n \"$wt\" ] && git worktree remove --force \"$wt\" && echo \"Removed worktree: $wt\"; done; echo \"$gone\" | xargs git branch -D"
   c = commit
   ca = commit -a
   cam = commit -am
@@ -50,6 +51,7 @@
   f = fetch
   ft = fetch --tags --force
   l = log --graph --oneline
+  lf = log --follow --graph
   lc = !git rev-parse HEAD # Get last commit hash
   lcc = !git rev-parse HEAD | pbcopy # Get last commit hash and copy to clipboard
   main = !git checkout $(git def) # Switch to main branch
