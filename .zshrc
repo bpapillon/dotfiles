@@ -110,9 +110,9 @@ function gho {
 
 ### Schematic
 
-SCHEMATIC_PROJECT_DIR="$HOME/projects/schematic/"
-SCHEMATIC_API_TEST_CONFIG="$HOME/projects/schematic/api/test.env"
-export PATH=$PATH:$HOME/projects/schematic/developers/bin/
+SCHEMATIC_PROJECT_DIR="$HOME/projects/schematic"
+SCHEMATIC_API_TEST_CONFIG="$SCHEMATIC_PROJECT_DIR/schematic-api/test.env"
+alias t=task
 
 ### Secrets
 
