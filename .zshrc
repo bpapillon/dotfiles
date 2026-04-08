@@ -12,7 +12,7 @@ PROMPT='^%F{magenta}%1~%f %F{cyan}${vcs_info_msg_0_}%f$ '
 ### PATH & other important stuff
 
 export EDITOR=nvim
-export PATH=/opt/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/sbin:/usr/local/include/:$HOME/bin:$HOME/.local/bin
+export PATH=/opt/homebrew/opt/ruby/bin:/opt/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/sbin:/usr/local/include/:$HOME/bin:$HOME/.local/bin
 
 ### Misc aliases
 
