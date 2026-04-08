@@ -20,6 +20,18 @@ if [[ -n "$cwd" ]]; then
   branch=$(git -C "$cwd" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
 fi
 
+# Worktree name: the JSON only populates `worktree.*` for the session that
+# *created* the worktree (claude --worktree). For sessions started inside an
+# existing worktree dir, derive it from git: in a linked worktree, --git-dir
+# is `<main>/.git/worktrees/<name>` while --git-common-dir is `<main>/.git`.
+if [[ -z "$wt_name" && -n "$cwd" ]]; then
+  git_dir=$(git -C "$cwd" rev-parse --git-dir 2>/dev/null || echo "")
+  git_common=$(git -C "$cwd" rev-parse --git-common-dir 2>/dev/null || echo "")
+  if [[ -n "$git_dir" && "$git_dir" != "$git_common" ]]; then
+    wt_name=$(basename "$git_dir")
+  fi
+fi
+
 # ANSI colors
 RESET=$'\e[0m'
 DIM=$'\e[2m'
