@@ -41,9 +41,17 @@
     "code-simplifier@claude-plugins-official": true
   },
   "alwaysThinkingEnabled": true,
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/scripts/statusline.sh"
+  },
   "skipDangerousModePermissionPrompt": true,
   "feedbackSurveyState": {
     "lastShownTime": 1754060237444
   },
-  "effortLevel": "high"
+  "effortLevel": "high",
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  }
 }
