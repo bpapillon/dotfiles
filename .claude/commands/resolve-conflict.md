@@ -20,4 +20,6 @@ For each conflicting file:
 
 After resolving each file, run all relevant tests, linters and formatters for the current project to ensure that you have a stable and correctly functioning codebase.
 
+Some repos contain generated code; this might be called out explicitly using a .gitattributes file. If you see conflicts on generated files, first try to resolve all conflicts on non-generated code, then figure out how that code is generated and see if simply regenerating the code will resolve the conflicts in the generated files.
+
 Do not run `git add` or `git rebase --continue` automatically; prompt the user to verify the resolution first.

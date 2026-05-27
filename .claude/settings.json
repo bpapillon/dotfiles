@@ -53,9 +53,10 @@
   },
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
+  "awaySummaryEnabled": false,
   "skipDangerousModePermissionPrompt": true,
+  "editorMode": "vim",
   "feedbackSurveyState": {
     "lastShownTime": 1754060237444
-  },
-  "awaySummaryEnabled": false
+  }
 }
