@@ -18,7 +18,7 @@ Use conventional-commit-style prefixes. The default is a bare description:
 add webhook batching for large payloads
 ```
 
-Use `chore(scope):` for changes that should NOT trigger a deploy:
+Use `chore(scope):` for non-functional changes like:
 - test-only changes
 - CI/workflow changes
 - formatting / linting fixes
