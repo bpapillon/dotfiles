@@ -96,3 +96,4 @@ export PATH=$PATH:$HOME/projects/schematic/developers/bin/
 if [ -f ~/.bash_secrets ]; then
     source ~/.bash_secrets
 fi
+. "$HOME/.cargo/env"
