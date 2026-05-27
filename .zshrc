@@ -152,4 +152,4 @@ export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
 # Claude Code
-alias evilclaude="claude --dangerously-skip-permissions"
+[ -f ~/.config/zsh/claude.zsh ] && source ~/.config/zsh/claude.zsh
