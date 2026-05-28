@@ -20,6 +20,24 @@ _cw_in_use() {
   return 1
 }
 
+# _cw_copy_includes <main_wt> <dest>  — copy gitignored files listed in
+# <main_wt>/.worktreeinclude into <dest>, mirroring `claude --worktree`.
+# Replicates the rule from code.claude.com/docs/en/worktrees: a file is copied
+# only if it matches a .worktreeinclude pattern AND is gitignored, so tracked
+# files are never duplicated. ls-files --others handles the "untracked" half;
+# check-ignore enforces the "also gitignored" half. NUL-delimited for safety.
+_cw_copy_includes() {
+  local main_wt="$1" dest="$2" inc="$1/.worktreeinclude"
+  [ -f "$inc" ] || return 0
+  local f d n=0
+  while IFS= read -r -d '' f; do
+    git -C "$main_wt" check-ignore -q -- "$f" || continue
+    d="$(dirname -- "$f")"
+    mkdir -p "$dest/$d" && cp -p "$main_wt/$f" "$dest/$f" && n=$((n + 1))
+  done < <(git -C "$main_wt" ls-files -z --others --ignored --exclude-from="$inc")
+  [ "$n" -gt 0 ] && echo "cw: copied $n gitignored file(s) per .worktreeinclude"
+}
+
 # cw <branch> [base]  — open a branch in a worktree, clean up on exit when clean.
 #   existing local branch  → check it out
 #   branch only on origin   → fetch + create a local tracking branch
@@ -45,6 +63,7 @@ cw() {
       local start="${base:-$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null || echo origin/main)}"
       git worktree add -b "$branch" "$dir" "$start" || return 1
     fi
+    _cw_copy_includes "$main_wt" "$dir"
   fi
 
   cd "$dir" || return 1
