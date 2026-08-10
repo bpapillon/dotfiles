@@ -30,6 +30,7 @@
     ],
     "deny": []
   },
+  "model": "opus",
   "hooks": {
     "Stop": [
       {
@@ -49,11 +50,24 @@
   },
   "enabledPlugins": {
     "gopls-lsp@claude-plugins-official": true,
-    "code-simplifier@claude-plugins-official": true
+    "code-simplifier@claude-plugins-official": true,
+    "stripe@claude-plugins-official": true,
+    "vercel@claude-plugins-official": true,
+    "subtext@subtext-marketplace": true,
+    "swift-lsp@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "subtext-marketplace": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/fullstorydev/subtext.git"
+      }
+    }
   },
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
   "awaySummaryEnabled": false,
+  "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
   "editorMode": "vim",
   "feedbackSurveyState": {

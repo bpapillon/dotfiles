@@ -46,6 +46,38 @@ Note: CLAUDE.md says "no mocking in tests"
 #### F. Fake Data
 Suspiciously specific metrics without citation, made-up case studies
 
+#### G. Dangling Plan/Spec/Ticket References
+Comments pointing at artifacts outside the code — plans, specs, design docs, ticket/PR numbers, phase names — with no meaning to a code reader.
+```python
+# Per the migration plan, phase 2
+# As described in SCH-1234
+# See the spec doc for why
+```
+A bare ticket/PR reference is slop. Keep one only when it adds context the code can't — explaining a non-obvious workaround, or tracking a real follow-up. The reason belongs in the comment, not the reference.
+
+#### H. Temporary-Condition Comments
+Comments explaining a transient state that won't need explaining once the reader sees the code as it is.
+```python
+# For now, we only support Stripe
+# Temporarily disabled until the new flow lands
+# This used to call the old API
+```
+Contrast a *legitimate footgun* — a persistent, non-obvious hazard (ordering dependency, sharp API edge, "do not reorder these calls"). Keep the footgun; cut the running commentary on how the code got here.
+
+#### I. Overly Verbose Comments
+The best comments are short. For any comment longer than one sentence, ask whether one sentence — or none — would do. Tighten or remove multi-sentence prose that re-explains the code or pads a simple point.
+
+#### J. Repetitive Comments
+A comment on nearly every line of a function, narrating each step. The density is the smell. Keep the one or two that explain *why*; delete the play-by-play.
+```python
+# increment the counter
+count += 1
+# check the limit
+if count > limit:
+    # return an error
+    raise LimitError()
+```
+
 ### 3. Present Findings
 
 ```
@@ -98,6 +130,10 @@ Next: Review flagged items, run tests, commit
 - `# TODO: (Add|Consider|Might|Should)`
 - Emoji in code comments
 - >3 line docstring for <5 line function
+- References a plan/spec/design-doc/ticket/PR/phase that adds nothing to a code reader (`per the plan`, `phase 2`, `see SCH-`, `as in the spec`) — keep only when it explains a non-obvious choice
+- Narrates a temporary state (`for now`, `temporarily`, `until ... lands`, `used to`) — keep only genuine persistent footguns
+- More than one sentence where one (or none) would do
+- A comment on nearly every line of a function — keep the one or two that explain *why*
 
 **Test patterns:**
 - >3 `@patch` decorators per test
