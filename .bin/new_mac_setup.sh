@@ -102,6 +102,7 @@ check_bin_install "ripgrep" || install_with_brew "ripgrep"
 check_bin_install "ag" || install_with_brew "the_silver_searcher"
 check_bin_install "op" || brew install --cask 1password/tap/1password-cli
 check_bin_install "figlet" || install_with_brew "figlet"
+check_bin_install "btop" || install_with_brew "btop"
 
 # Schematic
 check_bin_install "openapi_generator" || install_with_brew "openapi_generator"
