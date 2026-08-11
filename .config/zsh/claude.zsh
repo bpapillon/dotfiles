@@ -166,8 +166,10 @@ cwsweep() {
 #      interrupted removals that `git worktree list` no longer knows about.
 #      Deleted only if idle AND missing a .git file (nothing recoverable);
 #      unregistered dirs that still have a .git file are reported, not deleted.
-#   3. build caches: go build/test cache, Yarn, goimports, gopls — all
+#   3. build caches: go build/test cache, uv, Yarn, goimports, gopls — all
 #      regenerate on next use. GOMODCACHE is kept (cheap to keep, slow to refill).
+#      uv matters most here: a uvx-launched MCP server mints a fresh ~300MB
+#      environment per launch, which is how ~/.cache/uv reached 361GB unnoticed.
 #   --docker  also `docker system prune -f` (stopped containers, dangling
 #      images, build cache — never volumes, so dev DBs are safe).
 # Never touches: OrbStack/docker volumes, GOMODCACHE, dirty or in-use worktrees.
@@ -205,6 +207,10 @@ cwclean() {
   fi
 
   command -v go >/dev/null && go clean -cache -testcache 2>/dev/null
+  # prune, not clean: it drops only unreachable entries, so tool installs and
+  # project venvs keep the cache entries they hardlink against. `uv cache clean`
+  # would force a full re-download of everything still in use.
+  command -v uv >/dev/null && uv cache prune 2>/dev/null
   rm -rf ~/Library/Caches/Yarn ~/Library/Caches/goimports ~/Library/Caches/gopls
   (( dockerprune )) && docker system prune -f
 
