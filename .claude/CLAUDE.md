@@ -16,9 +16,7 @@ Strive to be concise and direct in writing, especially when said writing will be
 
 If the disk fills up (symptoms: "no space left on device", Docker/OrbStack dying mid-run, postgres containers vanishing, builds failing with cache write errors):
 
-1. Run `zsh -ic 'cwclean'` — my cleanup function in `~/.config/zsh/claude.zsh` (zsh -ic because it's loaded from .zshrc). It sweeps clean/idle Claude worktrees plus orphaned worktree dirs, and clears the go build/test, Yarn, goimports, and gopls caches (all safely rebuildable). Add `--docker` to also prune stopped containers/dangling images (never volumes).
-   - `cwclean` self-serializes with a lockfile. `cw: another sweep is running — waiting for it to finish...` means another agent holds it — that's expected, not a hang. Let it wait (up to 15m, `CW_LOCK_WAIT` to change); by the time it acquires, most of the work is already done. Never work around it by running the sweep steps by hand.
+1. Run `zsh -ic 'cwclean'`, which will clean up unused worktrees, caches, etc.
 2. If more is needed, find the hogs with `du -sh ~/Library/Caches/* | sort -rh | head` and `du -sh <repo>/.claude/worktrees/*`.
 3. Do NOT delete without asking: OrbStack data / docker volumes (dev databases live there), GOMODCACHE, or any worktree with uncommitted changes or unpushed commits — audit with `git -C <wt> status --porcelain` and `git log origin/main..HEAD` first.
 4. Removing a registered worktree never deletes its branch; committed work survives. Orphaned dirs (present on disk, absent from `git worktree list`) have no git safety net — check contents before removal.
-
