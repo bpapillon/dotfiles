@@ -30,6 +30,11 @@ chore(ci): pin actions/checkout to v4
 chore(tests): add coverage for webhook retry logic
 ```
 
+### Subject and body
+
+- Subject: imperative mood, lowercase, no trailing period, ≤50 characters where possible.
+- Most commits need no body. Add one only when the why isn't obvious from the diff — then explain why, not what, and wrap at 72 characters.
+
 ### Commit scope
 
 Keep commits focused. One logical change per commit. Don't bundle unrelated fixes.
