@@ -113,6 +113,7 @@ function gho {
 SCHEMATIC_PROJECT_DIR="$HOME/projects/schematic"
 SCHEMATIC_API_TEST_CONFIG="$SCHEMATIC_PROJECT_DIR/schematic-api/test.env"
 alias t=task
+alias schematic="task cli --"
 
 ### Secrets
 
