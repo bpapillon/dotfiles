@@ -103,11 +103,24 @@ return require('packer').startup(function(use)
           height = 48
         }
       }
-      require('nvim-test.runners.go-test'):setup {
+      local go_runner = require('nvim-test.runners.go-test'):setup {
         env = {
           CONFIG_FILE = '/Users/bpapillon/projects/schematic/schematic-api/test.env',
         },
+        filename_modifier = ':p',
       }
+      -- Override find_working_directory to locate the nearest go.mod,
+      -- so tests work in monorepos where go.mod is in a subdirectory.
+      function go_runner:find_working_directory(filename)
+        local dir = vim.fn.fnamemodify(filename, ':h')
+        while dir and dir ~= '/' do
+          if vim.fn.filereadable(dir .. '/go.mod') == 1 then
+            return dir
+          end
+          dir = vim.fn.fnamemodify(dir, ':h')
+        end
+        return self.config.working_directory
+      end
       require('nvim-test.runners.jest'):setup {
         command = 'yarn test',
       }
