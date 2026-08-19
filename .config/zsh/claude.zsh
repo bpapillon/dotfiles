@@ -299,3 +299,313 @@ sbresume() {
   fi
   ssh "${vm}.exe.xyz" '~/schematic-sandbox/exe/resume-task.sh'
 }
+
+# _claude_live — "pid<TAB>name<TAB>state<TAB>cwd<TAB>sessionId" for every running
+# session. ~/.claude/sessions/<pid>.json is Claude Code's own index and carries
+# the session name, so this beats reading cwd out of lsof: two sessions in the
+# same repo are indistinguishable by cwd but never by name. Entries are
+# cross-checked against pgrep because the json outlives the process it describes.
+# _claude_pids — pids of every running `claude`, space-separated.
+_claude_pids() {
+  ps -Ao pid=,comm= | awk '{n=$2; sub(/.*\//, "", n); if (n == "claude") printf "%s ", $1}'
+}
+
+_claude_live() {
+  emulate -L zsh
+  # ps, not pgrep: BSD pgrep omits its own ancestors, so a `whichclaude` run
+  # from inside a session would hide that very session — the worst possible miss.
+  local live=" $(_claude_pids) "
+  python3 - "$live" <<'PY'
+import glob, json, os, sys
+live = set(sys.argv[1].split())
+for f in glob.glob(os.path.expanduser('~/.claude/sessions/*.json')):
+    try:
+        d = json.load(open(f))
+    except Exception:
+        continue
+    pid = str(d.get('pid') or '')
+    if pid not in live:
+        continue
+    print('\t'.join((pid, d.get('name') or '-', d.get('status') or '-',
+                     d.get('cwd') or '-', d.get('sessionId') or '-')))
+PY
+}
+
+# whichclaude [pid]  — answer "which session is that, and what is it doing?".
+# Every Claude Code process shows up in ps and Activity Monitor as the same
+# `claude` line, and cwd alone doesn't separate two sessions open on the same
+# repo — the session name does.
+#   whichclaude       → all sessions: pid, name, state, uptime, RSS, cwd
+#   whichclaude 85944 → that session's name, state, cwd, and transcript path
+whichclaude() {
+  emulate -L zsh
+  local rows; rows="$(_claude_live)"
+  [[ -n $rows ]] || { echo "whichclaude: no claude sessions running" >&2; return 1; }
+
+  local pid name state cwd sid etime rss
+  if [[ -n $1 ]]; then
+    local row; row="$(grep -m1 "^$1	" <<< "$rows")"
+    [[ -n $row ]] || { echo "whichclaude: no live session with pid $1" >&2; return 1; }
+    IFS=$'\t' read -r pid name state cwd sid <<< "$row"
+    print -r -- "name:       $name"
+    print -r -- "state:      $state"
+    print -r -- "cwd:        $cwd"
+    print -r -- "transcript: ~/.claude/projects/${${cwd//\//-}//./-}/$sid.jsonl"
+    return
+  fi
+
+  # Sort by RSS before formatting — sorting the padded table would key on
+  # column position rather than the number.
+  {
+    while IFS=$'\t' read -r pid name state cwd sid; do
+      IFS=' ' read -r etime rss <<< "$(ps -o etime=,rss= -p "$pid" 2>/dev/null)"
+      [[ -n $rss ]] && print -r -- "$rss	$pid	$name	$state	$etime	${cwd/#$HOME/~}"
+    done <<< "$rows"
+  } | sort -rn | {
+    printf '%-7s %-34s %-7s %-13s %9s  %s\n' PID NAME STATE UPTIME RSS CWD
+    while IFS=$'\t' read -r rss pid name state etime cwd; do
+      printf '%-7s %-34s %-7s %-13s %6d MB  %s\n' \
+        "$pid" "${name:0:34}" "$state" "$etime" "$((rss / 1024))" "$cwd"
+    done
+  }
+}
+
+# _claude_hogs_py — the analysis behind claudehogs, kept in one place and fed to
+# python3 -c by each mode. Modes: table | worst | killlist <pid> | detail <pid>.
+_claude_hogs_py() {
+  cat <<'PY'
+import collections, datetime, glob, json, os, subprocess, sys
+
+mode = sys.argv[1]
+target = int(sys.argv[2]) if len(sys.argv) > 2 and sys.argv[2] else 0
+# Pid of the shell that invoked claudehogs. Run from inside a session, that
+# shell is itself one of the session's Bash-tool children, so without this the
+# sweep would kill the very command performing it.
+self_pid = int(os.environ.get('CLAUDEHOGS_SELF') or 0)
+
+def sh(*cmd, **kw):
+    try:
+        return subprocess.run(cmd, capture_output=True, text=True, timeout=10, **kw).stdout
+    except Exception:
+        return ''
+
+procs = {}
+for line in sh('ps', '-Ao', 'pid=,ppid=,pgid=,rss=,etime=,command=').splitlines():
+    f = line.split(None, 5)
+    if len(f) < 6:
+        continue
+    procs[int(f[0])] = dict(ppid=int(f[1]), pgid=int(f[2]), rss=int(f[3]),
+                            etime=f[4], cmd=f[5],
+                            name=os.path.basename(f[5].split()[0]))
+
+claudes = [p for p, d in procs.items() if d['name'] == 'claude']
+
+# Attribute every process to its NEAREST claude ancestor, so a nested session
+# owns its own subtree instead of inflating its parent's — and so a kill aimed
+# at the parent can never reach into a child session's work.
+# A session's children are two very different populations. The Bash tool runs
+# each command under `zsh -c source .../shell-snapshots/snapshot-*`, and that is
+# where build storms live. Everything else — gopls, MCP servers, hook runners —
+# is long-lived infrastructure the session needs to keep working. Only the
+# former is ever killed, so a sweep frees the memory without lobotomising the
+# session it spares.
+SNAP = 'shell-snapshots/snapshot'
+
+kids = collections.defaultdict(list)
+transient = set()
+for pid in procs:
+    if procs[pid]['name'] == 'claude':
+        continue
+    o, cur, seen, via_bash = 0, pid, set(), False
+    while cur > 1 and cur not in seen and cur in procs:
+        seen.add(cur)
+        if procs[cur]['name'] == 'claude':
+            o = cur
+            break
+        if SNAP in procs[cur]['cmd']:
+            via_bash = True
+        cur = procs[cur]['ppid']
+    if o:
+        kids[o].append(pid)
+        if via_bash:
+            transient.add(pid)
+
+sessions = {}
+for f in glob.glob(os.path.expanduser('~/.claude/sessions/*.json')):
+    try:
+        d = json.load(open(f))
+        sessions[int(d['pid'])] = d
+    except Exception:
+        pass
+
+def mb(kb):
+    return kb / 1024.0
+
+def subtree_kb(p):
+    return sum(procs[k]['rss'] for k in kids[p])
+
+# Spare our own ancestors AND our own process group: a pipeline like
+# `claudehogs --kill | less` puts the pager in this group, and each Bash call
+# gets its own group, so this never shields another session's runaway build.
+mine = set()
+cur, seen = self_pid, set()
+while cur > 1 and cur not in seen and cur in procs:
+    seen.add(cur)
+    mine.add(cur)
+    cur = procs[cur]['ppid']
+my_pgid = procs.get(self_pid, {}).get('pgid')
+if my_pgid:
+    mine |= {p for p, d in procs.items() if d['pgid'] == my_pgid}
+
+def killable(p):
+    return [k for k in kids[p] if k in transient and k not in mine]
+
+def killable_kb(p):
+    return sum(procs[k]['rss'] for k in killable(p))
+
+ranked = sorted(claudes, key=subtree_kb, reverse=True)
+
+if mode == 'worst':
+    # Rank on what a sweep can actually reclaim, not on total footprint.
+    best = max(claudes, key=killable_kb, default=0)
+    print(best if best and killable_kb(best) else '')
+    sys.exit()
+
+if mode == 'killlist':
+    print(' '.join(str(k) for k in (kids[target] if os.environ.get('CLAUDEHOGS_ALL')
+                                    else killable(target))))
+    sys.exit()
+
+if mode == 'table':
+    print('%-7s %-30s %-7s %9s %10s %10s  %s' %
+          ('PID', 'NAME', 'STATE', 'OWN', 'SPAWNED', 'KILLABLE', 'TOP CHILD'))
+    for p in ranked:
+        s = sessions.get(p, {})
+        top = max(kids[p], key=lambda k: procs[k]['rss'], default=None)
+        print('%-7s %-30s %-7s %6.0f MB %7.0f MB %7.0f MB  %s' % (
+            p, (s.get('name') or '-')[:30], s.get('status') or '-',
+            mb(procs[p]['rss']), mb(subtree_kb(p)), mb(killable_kb(p)),
+            '%s (%.0f MB)' % (procs[top]['name'], mb(procs[top]['rss'])) if top else '-'))
+    sys.exit()
+
+# detail
+if target not in procs or procs[target]['name'] != 'claude':
+    sys.stderr.write('claudehogs: pid %d is not a running claude session\n' % target)
+    sys.exit(1)
+s = sessions.get(target, {})
+cwd = s.get('cwd', '')
+print('=' * 72)
+print('pid %-8s %s' % (target, s.get('name') or '(unnamed)'))
+print('  state    %s   up %s   own %.0f MB   spawned %.0f MB across %d proc(s)' % (
+    s.get('status') or '?', procs[target]['etime'], mb(procs[target]['rss']),
+    mb(subtree_kb(target)), len(kids[target])))
+print('  cwd      %s' % (cwd or '?'))
+
+if cwd and os.path.isdir(cwd):
+    br = sh('git', '-C', cwd, 'branch', '--show-current').strip()
+    dirty = [l for l in sh('git', '-C', cwd, 'status', '--porcelain').splitlines() if l]
+    last = sh('git', '-C', cwd, 'log', '-1', '--format=%h %s').strip()
+    print('  branch   %s (%d uncommitted file(s))' % (br or '?', len(dirty)))
+    print('  head     %s' % last)
+
+sid = s.get('sessionId')
+if sid and cwd:
+    slug = cwd.replace('/', '-').replace('.', '-')
+    tp = os.path.expanduser('~/.claude/projects/%s/%s.jsonl' % (slug, sid))
+    if os.path.exists(tp):
+        rows = []
+        for line in collections.deque(open(tp, errors='replace'), maxlen=3000):
+            try:
+                rows.append(json.loads(line))
+            except Exception:
+                pass
+
+        def text(r):
+            c = r.get('message', {}).get('content')
+            if isinstance(c, str):
+                return c
+            if isinstance(c, list):
+                return ' '.join(b.get('text', '') for b in c
+                                if isinstance(b, dict) and b.get('type') == 'text')
+            return ''
+
+        users = [r for r in rows if r.get('type') == 'user' and not r.get('isMeta')
+                 and text(r).strip() and not text(r).lstrip().startswith(('<', '[Request'))]
+        asst = [r for r in rows if r.get('type') == 'assistant' and text(r).strip()]
+        if users:
+            print('\n  last ask [%s]' % users[-1].get('timestamp', '')[:19].replace('T', ' '))
+            print('    %s' % text(users[-1]).strip()[:400].replace('\n', '\n    '))
+        if asst:
+            print('\n  last reply [%s]' % asst[-1].get('timestamp', '')[:19].replace('T', ' '))
+            print('    %s' % text(asst[-1]).strip()[:400].replace('\n', '\n    '))
+
+if kids[target]:
+    print('\n  spawned processes  (* = killed by --kill; others are session infrastructure)')
+    for k in sorted(kids[target], key=lambda k: procs[k]['rss'], reverse=True):
+        print('  %s %-7s %-11s %6.0f MB  %s' % (
+            '*' if (k in transient and k not in mine) else ' ', k, procs[k]['etime'],
+            mb(procs[k]['rss']),
+            ('[this shell] ' if k in mine else '') + procs[k]['cmd'][:88]))
+print('=' * 72)
+PY
+}
+
+# claudehogs [pid] [--kill] [--yes]  — find the session eating the machine, say
+# what it was working on, and kill what it spawned.
+#
+# The session is never the hog: a `claude` process sits at 100-400MB while one
+# `go vet ./...` under it forks a compile worker per core at ~500MB each. ps and
+# Activity Monitor show those workers as anonymous toolchain processes with no
+# hint of which session launched them, so this bills every process to its
+# nearest `claude` ancestor and ranks by what each session spawned.
+#   claudehogs             → every session, biggest spawn footprint first
+#   claudehogs 7307        → what it's working on + what it spawned
+#   claudehogs --kill      → same for the worst offender, then kill the spawn
+#   claudehogs 7307 -k -y  → target a session, skip the confirmation
+# Nothing named `claude` is ever signalled: the session survives, sees its Bash
+# call fail, and can retry. Nested sessions own their own subtree, so a kill
+# aimed at a parent never reaches a child session's work.
+claudehogs() {
+  emulate -L zsh
+  local kill_mode=0 assume_yes=0 target= a
+  for a in "$@"; do
+    if [[ $a == (-k|--kill) ]]; then kill_mode=1
+    elif [[ $a == (-y|--yes) ]]; then assume_yes=1
+    elif [[ $a == <-> ]]; then target=$a
+    else echo "usage: claudehogs [pid] [--kill] [--yes]" >&2; return 1
+    fi
+  done
+
+  local py; py="$(_claude_hogs_py)"
+  export CLAUDEHOGS_SELF=$$
+  if (( ! kill_mode )); then
+    if [[ -n $target ]]; then python3 -c "$py" detail "$target"
+    else python3 -c "$py" table
+    fi
+    return
+  fi
+
+  [[ -n $target ]] || target="$(python3 -c "$py" worst)"
+  [[ -n $target ]] || { echo "claudehogs: no session has spawned anything" >&2; return 1; }
+  python3 -c "$py" detail "$target" || return 1
+
+  local kids; kids="$(python3 -c "$py" killlist "$target")"
+  [[ -n ${kids// } ]] || { echo "claudehogs: nothing to kill under $target"; return 0; }
+
+  if (( ! assume_yes )) && [[ -o interactive ]]; then
+    read -q "REPLY?kill ${#${=kids}} process(es) under $target, keeping the session? [y/N] " || { echo; return 1; }
+    echo
+  fi
+
+  # Snapshot the subtree before signalling: a child orphaned by its parent's
+  # death reparents to launchd and stops being attributable, so the SIGKILL
+  # sweep has to work from this list rather than re-walking the tree.
+  kill ${=kids} 2>/dev/null
+  sleep 3
+  local survivors; survivors="$(ps -o pid= -p ${(j:,:)${=kids}} 2>/dev/null)"
+  if [[ -n ${survivors// } ]]; then
+    echo "claudehogs: SIGKILL for ${#${=survivors}} survivor(s)"
+    kill -9 ${=survivors} 2>/dev/null
+  fi
+  echo "claudehogs: session $target left running."
+}
