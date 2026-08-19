@@ -2,6 +2,10 @@
 
 Always use the `git` skill when using git (cloning, committing, opening PRs, pushing, reviewing, etc).
 
+## Response length
+
+Keep responses focused, brief, and concise. Keep disclaimers and caveats short, and spend most of the response on the main answer. When asked to explain something, give a high-level summary unless an in-depth explanation is specifically requested.
+
 ## Writing
 
 Strive to be concise and direct in writing, especially when said writing will be shared with another person (a message or ticket). Keep in mind Orwell's rules for writing:
