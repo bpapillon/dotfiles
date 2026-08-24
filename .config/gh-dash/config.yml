@@ -1,0 +1,73 @@
+prSections:
+  - title: Review queue
+    filters: is:open org:schematichq draft:false -author:@me -author:app/dependabot -reviewed-by:@me -repo:SchematicHQ/schematic-ms
+    limit: 30
+  - title: Merge queue
+    filters: is:open org:schematichq draft:false review:approved -author:app/dependabot -repo:SchematicHQ/schematic-ms
+    limit: 20
+  - title: My PRs
+    filters: is:open org:schematichq author:@me
+    limit: 30
+  - title: Dependabot
+    filters: is:open org:schematichq author:app/dependabot
+    limit: 20
+  - title: Orbit
+    filters: is:open org:schematichq author:schematic-orbit
+    limit: 30
+
+issuesSections:
+  - title: My Issues
+    filters: is:open assignee:@me org:schematichq
+
+defaults:
+  view: prs
+  refetchIntervalMinutes: 5
+  prsLimit: 30
+  preview:
+    open: true
+    width: 60
+
+repoPaths:
+  SchematicHQ/*: /Users/bpapillon/projects/schematic/*
+
+keybindings:
+  prs:
+    - key: K
+      name: claude /pr-review (Ghostty split)
+      command: ~/bin/cw-tab --split {{.RepoPath}} {{.HeadRefName}} "/pr-review {{.PrNumber}}"
+    - key: O
+      name: claude session in PR worktree (Ghostty split)
+      command: ~/bin/cw-tab --split {{.RepoPath}} {{.HeadRefName}}
+    - key: M
+      name: claude /land (Ghostty split)
+      command: ~/bin/cw-tab --split {{.RepoPath}} {{.HeadRefName}} "/land"
+    - key: D
+      name: view diff (hunk)
+      command: gh pr diff {{.PrNumber}} -R {{.RepoName}} | hunk patch
+    - key: F
+      name: gh review (approve/request changes)
+      command: gh pr review {{.PrNumber}} -R {{.RepoName}}
+    - key: z
+      name: approve, no comment
+      command: gh pr review {{.PrNumber}} -R {{.RepoName}} --approve
+    - key: S
+      name: squash merge
+      command: ~/bin/pr-squash {{.RepoName}} {{.PrNumber}}
+    - key: Z
+      name: approve + squash merge
+      command: ~/bin/pr-squash --approve {{.RepoName}} {{.PrNumber}}
+    - key: C
+      name: chore-prefix + approve + squash merge (skips deploy)
+      command: ~/bin/pr-chore-merge {{.RepoName}} {{.PrNumber}}
+    - key: B
+      name: close + delete branch (confirm)
+      command: printf 'Close {{.RepoName}}#{{.PrNumber}} and delete {{.HeadRefName}}? [y/N] ' && read ans && { [ "$ans" = y ] && gh pr close {{.PrNumber}} -R {{.RepoName}} --delete-branch || echo aborted; }
+    - key: R
+      name: rebase onto base (claude resolves conflicts) + force-push
+      command: ~/bin/cw-tab --split --run {{.RepoPath}} rebase:{{.HeadRefName}} ~/bin/pr-rebase {{.RepoPath}} {{.HeadRefName}} {{.BaseRefName}}
+    - key: W
+      name: claude /monitor-deployment for this PR's merge (Ghostty split)
+      command: ~/bin/pr-monitor-deploy {{.RepoPath}} {{.RepoName}} {{.PrNumber}}
+    - key: P
+      name: mark ready (un-draft)
+      command: gh pr ready {{.PrNumber}} -R {{.RepoName}}
