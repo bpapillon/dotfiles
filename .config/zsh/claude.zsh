@@ -87,20 +87,59 @@ _cw_copy_includes() {
   [ "$n" -gt 0 ] && echo "cw: copied $n gitignored file(s) per .worktreeinclude"
 }
 
-# cw <branch> [base]  — open a branch in a worktree, clean up on exit when clean.
+# _cw_sync — bring the current branch up to date with its upstream before
+# handing the worktree to a session (replaces running `g rsr` by hand).
+# Hard-resets only when nothing local can be lost:
+#   dirty tracked files                  → skip
+#   local commit with no upstream patch  → skip (unpushed work)
+#   rebased/force-pushed PR branch       → reset (git cherry sees every local
+#                                          commit as patch-equivalent upstream)
+_cw_sync() {
+  git fetch --quiet origin || { echo "cw: fetch failed — using local state" >&2; return 0; }
+  git rev-parse --verify --quiet '@{u}' >/dev/null || return 0
+  [ "$(git rev-parse HEAD)" = "$(git rev-parse '@{u}')" ] && return 0
+  if [ -n "$(git status --porcelain -uno)" ]; then
+    echo "cw: branch differs from upstream but tree is dirty — not syncing (g rsr to force)"
+  elif git cherry 2>/dev/null | grep -q '^+'; then
+    echo "cw: local-only commit(s) not on upstream — not syncing (g rsr to force)"
+  else
+    git reset --hard --quiet '@{u}' && echo "cw: synced to $(git rev-parse --abbrev-ref '@{u}')"
+  fi
+}
+
+# cw <branch> [base] [-- claude args...]  — open a branch in a worktree, clean
+# up on exit when clean.
 #   existing local branch  → check it out
 #   branch only on origin   → fetch + create a local tracking branch
 #   branch doesn't exist    → create it from [base] (default: origin's default branch)
 #   CW_KEEP=1 cw <branch>   → skip cleanup (long-lived worktrees)
+#   cw foo -- "/pr-review"  → pass args to claude (e.g. start it on a skill)
+# The branch is synced to upstream before claude starts (see _cw_sync).
 # git worktree remove never deletes the branch and refuses on a dirty tree, so
 # cleanup is risk-free: committed work lives in the branch, WIP keeps the worktree.
 cw() {
-  local branch="$1" base="$2"
-  [ -z "$branch" ] && { echo "usage: cw <branch> [base]" >&2; return 1; }
+  local branch="" base="" cargs=()
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --) shift; cargs=("$@"); break ;;
+      *)
+        if [ -z "$branch" ]; then branch="$1"
+        elif [ -z "$base" ]; then base="$1"
+        else echo "usage: cw <branch> [base] [-- claude args...]" >&2; return 1
+        fi
+        shift ;;
+    esac
+  done
+  [ -z "$branch" ] && { echo "usage: cw <branch> [base] [-- claude args...]" >&2; return 1; }
 
   local main_wt
   main_wt="$(git worktree list --porcelain | sed -n '1s/^worktree //p')" || return 1
   local dir="$main_wt/.claude/worktrees/${branch//\//-}"
+  # A branch can only be checked out once; if some worktree already has it
+  # (e.g. an agent-* dir from Claude Code worktree isolation), use that one.
+  local existing
+  existing="$(git worktree list --porcelain | awk -v b="refs/heads/$branch" '/^worktree /{w=substr($0,10)} $0=="branch "b{print w; exit}')"
+  [ -n "$existing" ] && dir="$existing"
 
   if [ ! -d "$dir" ]; then
     git fetch --quiet origin || return 1
@@ -116,7 +155,8 @@ cw() {
   fi
 
   cd "$dir" || return 1
-  evilclaude
+  _cw_sync
+  evilclaude "${cargs[@]}"
 
   [ -n "$CW_KEEP" ] && return
   cd "$main_wt" || return
