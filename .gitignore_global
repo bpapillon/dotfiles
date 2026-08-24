@@ -5,3 +5,4 @@
 /coverage/
 settings.local.json
 .linear.toml
+.claude/worktrees/
