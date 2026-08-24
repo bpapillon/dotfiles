@@ -1,0 +1,36 @@
+#!/bin/zsh
+# Approve + squash-merge a PR under a chore(<scope>) title so the main pipeline
+# skips deployment (main.yml gates on head commit starting with "chore(").
+#
+# Usage: pr-chore-merge <owner/repo> <number>
+#
+# Passes the title via `gh pr merge --subject`, which overrides the squash
+# commit title regardless of the repo's COMMIT_OR_PR_TITLE setting (a
+# single-commit PR would otherwise take the commit's title, not the PR's).
+# The PR title is edited too so GitHub/Linear history matches.
+
+emulate -L zsh
+setopt extendedglob
+set -e
+# gh-dash swallows output on nonzero exit; hold so the error is readable.
+TRAPZERR() { print; read -sk1 "?[failed - press any key]"; }
+
+repo=$1 num=$2
+[[ -n $repo && -n $num ]] || { print -u2 "usage: pr-chore-merge <owner/repo> <number>"; exit 1 }
+
+title=$(gh pr view "$num" -R "$repo" --json title -q .title)
+# Strip an existing conventional prefix: "feat(x): ", "chore: ", "fix!: "...
+bare=${title#[a-zA-Z]##(\([^\)]##\))#(\!)#: }
+
+print "Current: $title"
+read "scope?chore scope [ci]: "
+scope=${scope:-ci}
+new="chore(${scope}): ${bare}"
+print "New:     $new"
+read -q "ok?Approve + squash merge? [y/N] " || { print; print aborted; exit 1 }
+print
+
+gh pr edit "$num" -R "$repo" --title "$new"
+[[ $(gh pr view "$num" -R "$repo" --json isDraft -q .isDraft) == true ]] && gh pr ready "$num" -R "$repo"
+gh pr review "$num" -R "$repo" --approve
+gh pr merge "$num" -R "$repo" --squash --subject "$new (#$num)"

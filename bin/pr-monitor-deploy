@@ -1,0 +1,26 @@
+#!/bin/zsh
+# Open a Ghostty split running `claude /monitor-deployment <run-url>` for the
+# `main` pipeline run triggered by a merged PR.
+#
+# Usage: pr-monitor-deploy <repo-dir> <owner/repo> <number>
+emulate -L zsh
+set -e
+TRAPZERR() { print; read -sk1 "?[failed - press any key]"; }
+
+(( $# == 3 )) || { print -u2 "usage: pr-monitor-deploy <repo-dir> <owner/repo> <number>"; exit 1 }
+dir=$1 repo=$2 num=$3
+
+sha=$(gh pr view "$num" -R "$repo" --json mergeCommit -q '.mergeCommit.oid')
+[[ -n $sha ]] || { print -u2 "PR #$num is not merged"; exit 1 }
+
+# The run can take a few seconds to appear after merge.
+url=""
+for i in {1..12}; do
+  url=$(gh run list -R "$repo" --workflow main.yml --commit "$sha" --json url -q '.[0].url')
+  [[ -n $url ]] && break
+  print "waiting for main run on ${sha[1,7]}…"
+  sleep 5
+done
+[[ -n $url ]] || { print -u2 "no main run found for $sha"; exit 1 }
+
+exec ~/bin/cw-tab --split --run "$dir" "monitor:$num" claude "/monitor-deployment $url"

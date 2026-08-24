@@ -1,0 +1,99 @@
+#!/bin/zsh
+# Open a Ghostty tab (or split) running `cw <branch> [-- claude args]` in
+# <repo-dir>, without stealing focus from the current terminal. Lets gh-dash
+# fire off several claude review sessions in parallel.
+#
+# Usage: cw-tab [--split] <repo-dir> <branch> [claude args...]
+#        cw-tab [--split] --run <repo-dir> <title> <command> [args...]
+#   --run executes <command> directly instead of `cw <branch>`.
+#
+# Default: new tab in window 1, titled <repo>:<branch>.
+# --split: first session splits the current terminal RIGHT; later sessions
+#          split the most recent session DOWN, so reviews stack in a column
+#          beside the dash. Panes close on clean exit and the column reflows.
+# CW_TAB_DRYRUN=1 prints the AppleScript instead of running it.
+
+emulate -L zsh
+set -e
+
+mode=tab run=0
+while [[ $1 == --* ]]; do
+  case $1 in
+    --split) mode=split ;;
+    --run) run=1 ;;
+    *) print -u2 "cw-tab: unknown flag $1"; exit 1 ;;
+  esac
+  shift
+done
+(( $# >= 2 )) || { print -u2 "usage: cw-tab [--split] <repo-dir> <branch> [claude args...]"; exit 1 }
+dir=$1 branch=$2
+shift 2
+
+# Build the inner zsh command with backslash quoting only — it gets wrapped in
+# single quotes inside the Ghostty command string, so it must not contain any.
+if (( run )); then
+  inner="${(j: :)${(q@)@}}"
+else
+  inner="cw ${(q)branch}"
+  (( $# )) && inner+=" -- ${(j: :)${(q@)@}}"
+fi
+# On failure keep the pane open so the error is readable; on success it closes.
+inner+=' || { print; read -sk1 "?[exited nonzero - press any key]" }'
+case $inner in (*\'*) print -u2 "cw-tab: args must not contain single quotes"; exit 1 ;; esac
+
+cmd="/bin/zsh -ic '$inner'"
+title="${dir:t}:${branch}"
+
+# Quote a value as an AppleScript string literal.
+as() {
+  local s=${1//\\/\\\\}
+  print -r -- "\"${s//\"/\\\"}\""
+}
+
+state=${XDG_CACHE_HOME:-$HOME/.cache}/cw-tab/last-split
+last=""
+[[ $mode == split && -r $state ]] && last=$(<$state)
+
+script="tell application \"Ghostty\""$'\n'
+script+="  set c to new surface configuration"$'\n'
+script+="  set command of c to $(as "$cmd")"$'\n'
+script+="  set initial working directory of c to $(as "$dir")"$'\n'
+script+="  set wait after command of c to false"$'\n'
+if [[ $mode == split ]]; then
+  script+="  set w to window 1"$'\n'
+  script+="  set src to focused terminal of selected tab of w"$'\n'
+  script+="  set dir to right"$'\n'
+  # Stack below the previous session if its pane is still alive in this tab.
+  script+="  repeat with t in terminals of selected tab of w"$'\n'
+  script+="    if id of t is $(as "$last") then"$'\n'
+  script+="      set src to t"$'\n'
+  script+="      set dir to down"$'\n'
+  script+="    end if"$'\n'
+  script+="  end repeat"$'\n'
+  script+="  set dash to focused terminal of selected tab of w"$'\n'
+  script+="  set n to split src direction dir with configuration c"$'\n'
+  script+="  focus dash"$'\n'
+  script+="  return id of n"$'\n'
+else
+  script+="  if (count of windows) is 0 then"$'\n'
+  script+="    set t to selected tab of (new window with configuration c)"$'\n'
+  script+="    perform action $(as "set_tab_title:$title") on focused terminal of t"$'\n'
+  script+="  else"$'\n'
+  script+="    set w to window 1"$'\n'
+  script+="    set prev to selected tab of w"$'\n'
+  script+="    set t to new tab in w with configuration c"$'\n'
+  script+="    delay 0.2"$'\n'
+  script+="    perform action $(as "set_tab_title:$title") on focused terminal of t"$'\n'
+  script+="    select tab prev"$'\n'
+  script+="  end if"$'\n'
+fi
+script+="end tell"$'\n'
+
+if [[ -n $CW_TAB_DRYRUN ]]; then
+  print -r -- "$script"
+elif [[ $mode == split ]]; then
+  mkdir -p ${state:h}
+  osascript -e "$script" > $state
+else
+  osascript -e "$script" >/dev/null
+fi
