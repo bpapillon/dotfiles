@@ -1,6 +1,6 @@
 prSections:
   - title: Review queue
-    filters: is:open org:schematichq draft:false -author:@me -author:app/dependabot -reviewed-by:@me -repo:SchematicHQ/schematic-ms
+    filters: is:open org:schematichq draft:false -author:@me -author:app/dependabot review-requested:@me -repo:SchematicHQ/schematic-ms -author:schematic-orbit
     limit: 30
   - title: Merge queue
     filters: is:open org:schematichq draft:false review:approved -author:app/dependabot -repo:SchematicHQ/schematic-ms
@@ -41,7 +41,12 @@ keybindings:
     - key: M
       name: claude /land (Ghostty split)
       command: ~/bin/cw-tab --split {{.RepoPath}} {{.HeadRefName}} "/land"
-    - key: D
+    - key: L
+      name: list commits
+      command: >
+        gh api repos/{{.RepoName}}/pulls/{{.PrNumber}}/commits --paginate
+        --jq '.[] | .sha[0:7] + "  " + (.commit.message | split("\n")[0])' | less
+    - key: d
       name: view diff (hunk)
       command: gh pr diff {{.PrNumber}} -R {{.RepoName}} | hunk patch
     - key: F
@@ -49,13 +54,13 @@ keybindings:
       command: gh pr review {{.PrNumber}} -R {{.RepoName}}
     - key: z
       name: approve, no comment
-      command: gh pr review {{.PrNumber}} -R {{.RepoName}} --approve
+      command: ~/bin/bg-run "approve {{.RepoName}}#{{.PrNumber}}" gh pr review {{.PrNumber}} -R {{.RepoName}} --approve
     - key: S
       name: squash merge
-      command: ~/bin/pr-squash {{.RepoName}} {{.PrNumber}}
+      command: ~/bin/bg-run "merge {{.RepoName}}#{{.PrNumber}}" ~/bin/pr-squash {{.RepoName}} {{.PrNumber}}
     - key: Z
       name: approve + squash merge
-      command: ~/bin/pr-squash --approve {{.RepoName}} {{.PrNumber}}
+      command: ~/bin/bg-run "approve+merge {{.RepoName}}#{{.PrNumber}}" ~/bin/pr-squash --approve {{.RepoName}} {{.PrNumber}}
     - key: C
       name: chore-prefix + approve + squash merge (skips deploy)
       command: ~/bin/pr-chore-merge {{.RepoName}} {{.PrNumber}}
@@ -70,4 +75,4 @@ keybindings:
       command: ~/bin/pr-monitor-deploy {{.RepoPath}} {{.RepoName}} {{.PrNumber}}
     - key: P
       name: mark ready (un-draft)
-      command: gh pr ready {{.PrNumber}} -R {{.RepoName}}
+      command: ~/bin/bg-run "ready {{.RepoName}}#{{.PrNumber}}" gh pr ready {{.PrNumber}} -R {{.RepoName}}

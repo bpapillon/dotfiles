@@ -32,5 +32,11 @@ print
 
 gh pr edit "$num" -R "$repo" --title "$new"
 [[ $(gh pr view "$num" -R "$repo" --json isDraft -q .isDraft) == true ]] && gh pr ready "$num" -R "$repo"
-gh pr review "$num" -R "$repo" --approve
+# Approving your own PR errors, and an already-approved PR doesn't need it.
+me=$(gh api user -q .login)
+author=$(gh pr view "$num" -R "$repo" --json author -q .author.login)
+decision=$(gh pr view "$num" -R "$repo" --json reviewDecision -q .reviewDecision)
+if [[ $author != $me && $decision != APPROVED ]]; then
+  gh pr review "$num" -R "$repo" --approve
+fi
 gh pr merge "$num" -R "$repo" --squash --subject "$new (#$num)"
