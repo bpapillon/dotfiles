@@ -247,6 +247,15 @@ cwclean() {
   fi
 
   command -v go >/dev/null && go clean -cache -testcache 2>/dev/null
+  # `go test` builds every test binary into one $TMPDIR/go-build* work dir and
+  # deletes it only on a normal exit. A run killed mid-way (Bash tool timeout,
+  # Ctrl-C on the wrong shell) leaves 10-15G behind, and macOS sweeps $TMPDIR
+  # only on reboot or after 3 idle days. Skip dirs a live run still has open.
+  local gb
+  for gb in ${TMPDIR:-/tmp}/go-build*(N/); do
+    lsof +D "$gb" >/dev/null 2>&1 && continue
+    rm -rf "$gb" && echo "removed  $gb (orphaned go work dir)"
+  done
   # prune, not clean: it drops only unreachable entries, so tool installs and
   # project venvs keep the cache entries they hardlink against. `uv cache clean`
   # would force a full re-download of everything still in use.
