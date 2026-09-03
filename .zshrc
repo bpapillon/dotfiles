@@ -154,3 +154,6 @@ export SDKMAN_DIR="$HOME/.sdkman"
 
 # Claude Code
 [ -f ~/.config/zsh/claude.zsh ] && source ~/.config/zsh/claude.zsh
+
+# ActivityWatch project time
+awtime() { ~/.claude/scripts/aw-project-time.py --days "${1:-7}" "${@:2}" }
