@@ -24,3 +24,7 @@ If the disk fills up (symptoms: "no space left on device", Docker/OrbStack dying
 2. If more is needed, find the hogs with `du -sh ~/Library/Caches/* | sort -rh | head` and `du -sh <repo>/.claude/worktrees/*`.
 3. Do NOT delete without asking: OrbStack data / docker volumes (dev databases live there), GOMODCACHE, or any worktree with uncommitted changes or unpushed commits — audit with `git -C <wt> status --porcelain` and `git log origin/main..HEAD` first.
 4. Removing a registered worktree never deletes its branch; committed work survives. Orphaned dirs (present on disk, absent from `git worktree list`) have no git safety net — check contents before removal.
+
+## Subagents
+
+If you are using the Fable model, use Opus for coding subagents unless instructed otherwise.

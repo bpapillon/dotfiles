@@ -91,6 +91,7 @@ Keep it minimal. The PR description exists so reviewers understand intent and ap
 - If the PR fixes a Sentry issue, the **first line** of the body must be `fixes {sentry-url}`. This auto-resolves the issue on merge.
 - If the PR fixes a Fencer vulnerability, the **first line** of the body must be `fixes {fencer-url}`. For multiple related Fencer vulns, list one `fixes {fencer-url}` per line at the top of the body.
 - Linear ticket links are handled automatically by the Linear integration when the branch name matches — no need to add them manually.
+- In schematic-api, the `monitor-deployment` skill reads two kinds of paragraph from the description of every PR a deploy ships. Start a paragraph with `Deploy note:` for rollout behaviour the watcher should expect (old and new instances briefly disagreeing, say), and with `Post-deploy check:` for something to measure after deploy (a new query on a hot path, say). Use the exact prefix at the start of the paragraph, and add them only when the PR warrants one.
 
 ### Example (Sentry fix)
 

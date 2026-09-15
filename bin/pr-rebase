@@ -11,7 +11,7 @@ set -e
 
 repo=$1 branch=$2 base=$3
 [[ -n $repo && -n $branch && -n $base ]] || { print -u2 "usage: pr-rebase <repo-dir> <branch> <base>"; exit 1 }
-source ~/.config/zsh/claude.zsh   # _cw_sync, _cw_copy_includes, _cw_in_use
+source ~/.config/zsh/claude.zsh   # _cw_sync, _cw_copy_includes, _cw_in_use, cwdone
 
 cd $repo
 main_wt=$(git worktree list --porcelain | sed -n '1s/^worktree //p')
@@ -67,6 +67,14 @@ print "==> pushing"
 git push --force-with-lease
 print "==> rebased $branch onto origin/$base and pushed"
 
+# Only tear down a worktree this run created; one that was already there is
+# somebody's parked checkout. cwdone adds what the bare `git worktree remove`
+# lacked: the sweep lock, so several rebases fired from the dash at once do not
+# race each other's removals, and a re-check that no session has moved into the
+# tree during the rebase. It exits 2 when it decides to keep the worktree, which
+# is a fine outcome here — the rebase is already pushed, so cleanup must not
+# fail the run (and under `set -e` it otherwise would).
 if [[ -n $created ]]; then
-  cd $main_wt && git worktree remove "$dir" && print "==> removed worktree"
+  cd $main_wt
+  cwdone "$dir" || true
 fi

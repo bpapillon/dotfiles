@@ -69,6 +69,46 @@ _cw_unlock() {
   unset _CW_LOCK_FD
 }
 
+# _cw_size <path> — size of <path> in KB. Costs a `du` walk (~3s on a worktree
+# with node_modules in it), which is worth paying: the cheap alternative, a df
+# reading either side of the delete, reports whatever else touched the disk in
+# between — a concurrent `go test` had it claiming 517M for a 120M tree.
+_cw_size() { du -sk "$1" 2>/dev/null | awk '{print $1}'; }
+
+# _cw_human <kb> — KB as a short human string, or "?" when the reading failed
+# rather than a confident-looking 0.
+_cw_human() {
+  [ -n "$1" ] || { print -n "?"; return; }
+  awk -v k="$1" 'BEGIN {
+    if (k < 0) k = 0
+    u = "KMGT"; i = 1
+    while (k >= 1024 && i < 4) { k /= 1024; i++ }
+    printf "%.1f%s", k, substr(u, i, 1)
+  }'
+}
+
+# _cw_reap_gobuild — delete orphaned `go test` work dirs. `go test` builds every
+# test binary into one $TMPDIR/go-build* dir and deletes it only on a normal
+# exit. A run killed mid-way (Bash tool timeout, Ctrl-C on the wrong shell)
+# leaves 10-15G behind, and macOS sweeps $TMPDIR only on reboot or after 3 idle
+# days. Unlike the build cache these are pure garbage — nothing reads them
+# again — so reaping them is free.
+#
+# Age plus argv, not lsof, decides what is live. `lsof +D` reports nothing for a
+# work dir that a running `go test` is compiling into right now (reproduced with
+# a dozen `compile -o .../go-buildN/...` processes running), so the guard this
+# replaces would delete an in-flight run's tree out from under it. Two signals
+# that do hold: go stamps the dir every time it mints a b#### subdir, and every
+# compile, link and test-binary process carries the dir's name in its argv.
+_cw_reap_gobuild() {
+  local age="${CW_GOBUILD_AGE:-60}" tmp="${${TMPDIR:-/tmp}%/}" gb
+  while IFS= read -r gb; do
+    [ -n "$gb" ] || continue
+    pgrep -f "${gb:t}" >/dev/null 2>&1 && continue
+    rm -rf "$gb" && echo "removed  $gb (orphaned go work dir, idle ${age}m+)"
+  done < <(find "$tmp" -maxdepth 1 -type d -name 'go-build*' -mmin +"$age" 2>/dev/null)
+}
+
 # _cw_copy_includes <main_wt> <dest>  — copy gitignored files listed in
 # <main_wt>/.worktreeinclude into <dest>, mirroring `claude --worktree`.
 # Replicates the rule from code.claude.com/docs/en/worktrees: a file is copied
@@ -160,15 +200,103 @@ cw() {
 
   [ -n "$CW_KEEP" ] && return
   cd "$main_wt" || return
-  if _cw_in_use "$dir"; then
-    echo "cw: kept worktree — another session or shell is using it."
-  elif git worktree remove "$dir" 2>/dev/null; then
-    echo "cw: removed clean worktree (branch '$branch' preserved)"
+  cwdone "$dir"
+  # 2 means the tree was dirty and the worktree survives — put you back in it.
+  [ $? -eq 2 ] && cd "$dir"
+}
+
+# cwdone [-f] [branch|dir]  — tear down one worktree you are finished with,
+# instead of waiting for the disk to fill and reaching for cwclean.
+#   cwdone             → the worktree you are standing in
+#   cwdone <branch>    → the worktree holding that branch
+#   cwdone <dir>       → that worktree, by path or by name under .claude/worktrees
+#   cwdone -f ...      → discard uncommitted changes too
+# Reclaims what actually dies with the worktree: its node_modules (1-2G of the
+# ~1.7G a checked-out worktree costs here) plus the orphaned go work dirs in
+# $TMPDIR. It deliberately does NOT run `go clean -cache`: the build cache is
+# global and shared, so dropping it to retire one branch just makes the next
+# build slow in every other worktree. That trade belongs to cwclean, which you
+# run when the disk is genuinely full.
+# The branch always survives — git worktree remove never deletes it — so the
+# only thing at risk is uncommitted work, and that is what -f gates.
+cwdone() {
+  emulate -L zsh
+  local force=0 target=""
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      -f|--force) force=1; shift ;;
+      -*) echo "usage: cwdone [-f] [branch|dir]" >&2; return 1 ;;
+      *) target="$1"; shift ;;
+    esac
+  done
+
+  local main_wt
+  main_wt="$(git worktree list --porcelain | sed -n '1s/^worktree //p')" || return 1
+  main_wt="${main_wt:A}"
+
+  # Resolve target → directory. A bare name can be a branch, a directory under
+  # .claude/worktrees, or both; check the branch first since that is what you
+  # name when you think in terms of the work rather than the checkout.
+  local dir=""
+  if [ -z "$target" ]; then
+    dir="$(git rev-parse --show-toplevel 2>/dev/null)"
   else
-    cd "$dir"
-    echo "cw: kept worktree — uncommitted changes; you're back in it."
-    echo "    'git worktree remove --force $dir' to discard."
+    dir="$(git worktree list --porcelain |
+      awk -v b="refs/heads/$target" '/^worktree /{w=substr($0,10)} $0=="branch "b{print w; exit}')"
+    [ -z "$dir" ] && [ -d "$main_wt/.claude/worktrees/${target//\//-}" ] &&
+      dir="$main_wt/.claude/worktrees/${target//\//-}"
+    [ -z "$dir" ] && [ -d "$target" ] && dir="$target"
   fi
+  [ -n "$dir" ] || { echo "cwdone: no worktree matching '$target'" >&2; return 1; }
+  dir="${dir:A}"
+
+  # Only ever remove something git already tracks as a worktree. An unregistered
+  # path that happens to look like one is a plain rm -rf with no safety net, and
+  # that is cwclean's orphan pass, run under its own rules.
+  local w registered=0
+  while IFS= read -r w; do
+    [ "${w:A}" = "$dir" ] && { registered=1; break; }
+  done < <(git worktree list --porcelain | sed -n 's/^worktree //p')
+  (( registered )) || { echo "cwdone: $dir is not a registered worktree" >&2; return 1; }
+  [ "$dir" = "$main_wt" ] && { echo "cwdone: that is the main worktree" >&2; return 1; }
+
+  # Step out before the in-use check, or your own shell counts as a user.
+  case "$PWD" in "$dir"|"$dir"/*) cd "$main_wt" || return 1 ;; esac
+
+  if [[ -z $_CW_LOCK_FD ]]; then
+    _cw_lock || return 1
+    trap '_cw_unlock' EXIT
+  fi
+
+  if _cw_in_use "$dir"; then
+    echo "cwdone: kept $dir — another session or shell is using it."
+    return 2
+  fi
+
+  local branch upstream ahead
+  branch="$(git -C "$dir" symbolic-ref --quiet --short HEAD 2>/dev/null)"
+  # Informational only: the branch outlives the worktree, so unpushed commits
+  # are not lost here. Worth saying out loud because nothing else will say it.
+  # Fall back to origin's default branch when there is no upstream — that is the
+  # case where the commits exist nowhere but here, so it is the one worth naming,
+  # and it is also the one `@{u}..HEAD` fails silently on.
+  upstream="$(git -C "$dir" rev-parse --abbrev-ref --verify --quiet '@{u}' 2>/dev/null)"
+  [ -z "$upstream" ] && upstream="$(git -C "$dir" symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null || echo origin/main)"
+  ahead="$(git -C "$dir" rev-list --count "$upstream..HEAD" 2>/dev/null)"
+  [ "${ahead:-0}" -gt 0 ] &&
+    echo "cwdone: '$branch' is $ahead commit(s) ahead of $upstream — kept on the branch."
+
+  local size
+  size="$(_cw_size "$dir")"
+  if (( force )); then
+    git worktree remove --force "$dir" || return 1
+  elif ! git worktree remove "$dir" 2>/dev/null; then
+    echo "cwdone: kept $dir — uncommitted changes. 'cwdone -f $target' to discard."
+    return 2
+  fi
+  git worktree prune
+  _cw_reap_gobuild
+  echo "cwdone: removed $dir (branch '$branch' preserved) — $(_cw_human "$size") reclaimed"
 }
 
 # cwsweep — remove clean, idle worktrees under .claude/worktrees/. Keeps any
@@ -247,15 +375,7 @@ cwclean() {
   fi
 
   command -v go >/dev/null && go clean -cache -testcache 2>/dev/null
-  # `go test` builds every test binary into one $TMPDIR/go-build* work dir and
-  # deletes it only on a normal exit. A run killed mid-way (Bash tool timeout,
-  # Ctrl-C on the wrong shell) leaves 10-15G behind, and macOS sweeps $TMPDIR
-  # only on reboot or after 3 idle days. Skip dirs a live run still has open.
-  local gb
-  for gb in ${TMPDIR:-/tmp}/go-build*(N/); do
-    lsof +D "$gb" >/dev/null 2>&1 && continue
-    rm -rf "$gb" && echo "removed  $gb (orphaned go work dir)"
-  done
+  _cw_reap_gobuild
   # prune, not clean: it drops only unreachable entries, so tool installs and
   # project venvs keep the cache entries they hardlink against. `uv cache clean`
   # would force a full re-download of everything still in use.

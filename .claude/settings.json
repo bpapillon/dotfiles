@@ -31,7 +31,7 @@
     ],
     "deny": []
   },
-  "model": "opus[1m]",
+  "model": "opus",
   "hooks": {
     "Stop": [
       {
