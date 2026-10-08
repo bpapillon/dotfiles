@@ -334,7 +334,8 @@ cwsweep() {
 #      interrupted removals that `git worktree list` no longer knows about.
 #      Deleted only if idle AND missing a .git file (nothing recoverable);
 #      unregistered dirs that still have a .git file are reported, not deleted.
-#   3. build caches: go build/test cache, uv, Yarn, goimports, gopls — all
+#   3. build caches: go build/test cache (every GOCACHE location in use, not
+#      just this shell's), uv, npm, Yarn, goimports, gopls — all
 #      regenerate on next use. GOMODCACHE is kept (cheap to keep, slow to refill).
 #      uv matters most here: a uvx-launched MCP server mints a fresh ~300MB
 #      environment per launch, which is how ~/.cache/uv reached 361GB unnoticed.
@@ -375,11 +376,23 @@ cwclean() {
   fi
 
   command -v go >/dev/null && go clean -cache -testcache 2>/dev/null
+  # Sessions and tools set GOCACHE to paths other than the default, and plain
+  # `go clean -cache` only sees the one in this shell's env — on 2026-10-02 these
+  # two held 97G while cwclean freed nothing. Cleaning each through go itself
+  # (not rm -rf) respects the cache's own locking if a build is mid-write.
+  local gc
+  for gc in ~/.gocache-schematic ~/.cache/go-build ~/Library/Caches/go-build; do
+    [ -d "$gc" ] || continue
+    command -v go >/dev/null && GOCACHE="$gc" go clean -cache 2>/dev/null
+  done
   _cw_reap_gobuild
   # prune, not clean: it drops only unreachable entries, so tool installs and
   # project venvs keep the cache entries they hardlink against. `uv cache clean`
   # would force a full re-download of everything still in use.
   command -v uv >/dev/null && uv cache prune 2>/dev/null
+  # npm's content cache only ever grows (27G here); --force is npm's required
+  # acknowledgement, not an escalation. Packages refetch on next install.
+  command -v npm >/dev/null && npm cache clean --force 2>/dev/null
   rm -rf ~/Library/Caches/Yarn ~/Library/Caches/goimports ~/Library/Caches/gopls
   (( dockerprune )) && docker system prune -f
 
