@@ -1,48 +1,95 @@
 #!/bin/zsh
-# Open a Ghostty tab (or split) running `cw <branch> [-- claude args]` in
-# <repo-dir>, without stealing focus from the current terminal. Lets gh-dash
-# fire off several claude review sessions in parallel.
+# Open a tab (or split) running `cw <branch> [-- claude args]` in <repo-dir>,
+# without stealing focus from the current terminal. Lets gh-dash fire off
+# several claude review sessions in parallel.
 #
-# Usage: cw-tab [--split] <repo-dir> <branch> [claude args...]
+# Usage: cw-tab [--split] [--focus] [--base BASE] <repo-dir> <branch> [claude args...]
 #        cw-tab [--split] --run <repo-dir> <title> <command> [args...]
 #   --run executes <command> directly instead of `cw <branch>`.
+#   --base passes a start point through to `cw <branch> BASE`.
+#   --focus switches to the new tab/pane (Rex only; default leaves focus put).
 #
-# Default: new tab in window 1, titled <repo>:<branch>.
+# Backend: Rex when $REX_SESSION is set (we're inside a Rex terminal),
+# otherwise Ghostty via AppleScript.
+#
+# Default: new tab, titled <repo>:<branch>.
 # --split: first session splits the current terminal RIGHT; later sessions
 #          split the most recent session DOWN, so reviews stack in a column
 #          beside the dash. Panes close on clean exit and the column reflows.
-# CW_TAB_DRYRUN=1 prints the AppleScript instead of running it.
+# CW_TAB_DRYRUN=1 prints what it would run instead of running it.
 
 emulate -L zsh
 set -e
 
-mode=tab run=0
+mode=tab run=0 base="" focus=false
 while [[ $1 == --* ]]; do
   case $1 in
     --split) mode=split ;;
     --run) run=1 ;;
+    --base) base=$2; shift ;;
+    --focus) focus=true ;;
     *) print -u2 "cw-tab: unknown flag $1"; exit 1 ;;
   esac
   shift
 done
-(( $# >= 2 )) || { print -u2 "usage: cw-tab [--split] <repo-dir> <branch> [claude args...]"; exit 1 }
+(( $# >= 2 )) || { print -u2 "usage: cw-tab [--split] [--focus] [--base BASE] <repo-dir> <branch> [claude args...]"; exit 1 }
 dir=$1 branch=$2
 shift 2
 
-# Build the inner zsh command with backslash quoting only — it gets wrapped in
-# single quotes inside the Ghostty command string, so it must not contain any.
+# The inner zsh command. CW_INLINE=1 stops `cw` from handing off to yet
+# another tab (see cw in ~/.config/zsh/claude.zsh).
 if (( run )); then
   inner="${(j: :)${(q@)@}}"
 else
-  inner="cw ${(q)branch}"
+  inner="CW_INLINE=1 cw ${(q)branch}"
+  [[ -n $base ]] && inner+=" ${(q)base}"
   (( $# )) && inner+=" -- ${(j: :)${(q@)@}}"
 fi
 # On failure keep the pane open so the error is readable; on success it closes.
 inner+=' || { print; read -sk1 "?[exited nonzero - press any key]" }'
-case $inner in (*\'*) print -u2 "cw-tab: args must not contain single quotes"; exit 1 ;; esac
 
-cmd="/bin/zsh -ic '$inner'"
 title="${dir:t}:${branch}"
+cache=${XDG_CACHE_HOME:-$HOME/.cache}/cw-tab
+
+# ---------------------------------------------------------------- Rex backend
+if [[ -n $REX_SESSION ]]; then
+  rex=${commands[rex]:-"/Applications/Rex Beta.app/Contents/Helpers/Rex Server.rex/Contents/MacOS/rex"}
+  # --shell=none: run zsh directly; -i inside it loads cw from ~/.zshrc.
+  common=(-c "$dir" --focus=$focus --shell=none --json)
+  cmd=(-- /bin/zsh -ic "$inner")
+
+  if [[ $mode == split ]]; then
+    state=$cache/rex-last-split
+    anchor=$REX_BLOCK dirn=right
+    # Stack below the previous session if its pane is still alive in the same
+    # tab as the dash.
+    if [[ -r $state ]]; then
+      last=$(<$state)
+      if "$rex" block ls -s "$REX_SESSION" --json 2>/dev/null | jq -e \
+          --arg last "$last" --arg me "$REX_BLOCK" '
+            .blocks as $b
+            | ($b[] | select(.block_id == $me) | .window_id) as $w
+            | any($b[]; .block_id == $last and .window_id == $w)' >/dev/null; then
+        anchor=$last dirn=below
+      fi
+    fi
+    argv=(split -s "$REX_SESSION" -b "$anchor" --split=$dirn --label "$title" $common $cmd)
+    if [[ -n $CW_TAB_DRYRUN ]]; then print -r -- rex ${(q)argv}; exit; fi
+    mkdir -p $cache
+    "$rex" $argv | jq -r '.block_ids[0]' > $state
+  else
+    argv=(window new -s "$REX_SESSION" "$title" $common $cmd)
+    if [[ -n $CW_TAB_DRYRUN ]]; then print -r -- rex ${(q)argv}; exit; fi
+    "$rex" $argv >/dev/null
+  fi
+  exit
+fi
+
+# ------------------------------------------------------------ Ghostty backend
+# The inner command gets wrapped in single quotes inside the Ghostty command
+# string, so it must not contain any.
+case $inner in (*\'*) print -u2 "cw-tab: args must not contain single quotes"; exit 1 ;; esac
+cmd="/bin/zsh -ic '$inner'"
 
 # Quote a value as an AppleScript string literal.
 as() {
@@ -50,7 +97,7 @@ as() {
   print -r -- "\"${s//\"/\\\"}\""
 }
 
-state=${XDG_CACHE_HOME:-$HOME/.cache}/cw-tab/last-split
+state=$cache/last-split
 last=""
 [[ $mode == split && -r $state ]] && last=$(<$state)
 
@@ -92,7 +139,7 @@ script+="end tell"$'\n'
 if [[ -n $CW_TAB_DRYRUN ]]; then
   print -r -- "$script"
 elif [[ $mode == split ]]; then
-  mkdir -p ${state:h}
+  mkdir -p $cache
   osascript -e "$script" > $state
 else
   osascript -e "$script" >/dev/null

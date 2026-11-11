@@ -2,6 +2,9 @@ prSections:
   - title: Review queue
     filters: is:open org:schematichq draft:false -author:@me -author:app/dependabot review-requested:@me -repo:SchematicHQ/schematic-ms -author:schematic-orbit
     limit: 30
+  - title: Unclaimed
+    filters: is:open org:schematichq draft:false review:none -review-requested:@me -author:@me -author:app/dependabot -author:app/fern-api -author:schematic-orbit -repo:SchematicHQ/schematic-ms -repo:SchematicHQ/schematic-next-example-orb
+    limit: 30
   - title: Merge queue
     filters: is:open org:schematichq draft:false review:approved -author:app/dependabot -repo:SchematicHQ/schematic-ms
     limit: 20
@@ -33,13 +36,13 @@ repoPaths:
 keybindings:
   prs:
     - key: K
-      name: claude /pr-review (Ghostty split)
+      name: claude /pr-review (split)
       command: ~/bin/cw-tab --split {{.RepoPath}} {{.HeadRefName}} "/pr-review {{.PrNumber}}"
     - key: O
-      name: claude session in PR worktree (Ghostty split)
+      name: claude session in PR worktree (split)
       command: ~/bin/cw-tab --split {{.RepoPath}} {{.HeadRefName}}
     - key: M
-      name: claude /land (Ghostty split)
+      name: claude /land (split)
       command: ~/bin/cw-tab --split {{.RepoPath}} {{.HeadRefName}} "/land"
     - key: L
       name: list commits
@@ -71,7 +74,7 @@ keybindings:
       name: rebase onto base (claude resolves conflicts) + force-push
       command: ~/bin/cw-tab --split --run {{.RepoPath}} rebase:{{.HeadRefName}} ~/bin/pr-rebase {{.RepoPath}} {{.HeadRefName}} {{.BaseRefName}}
     - key: W
-      name: claude /monitor-deployment for this PR's merge (Ghostty split)
+      name: claude /monitor-deployment for this PR's merge (split)
       command: ~/bin/pr-monitor-deploy {{.RepoPath}} {{.RepoName}} {{.PrNumber}}
     - key: P
       name: mark ready (un-draft)

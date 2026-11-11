@@ -11,8 +11,16 @@ alias evilclaude="claude --dangerously-skip-permissions"
 # macOS account password) before starting claude over SSH.
 alias kcunlock="security unlock-keychain ~/Library/Keychains/login.keychain-db"
 
-# _cw_cwds — print the current working directory of every running process.
-_cw_cwds() { lsof -d cwd -Fn 2>/dev/null | sed -n 's/^n//p'; }
+# _cw_cwds — print the current working directory of every running process
+# except idle interactive shells. Rex keeps shells alive after their tab is
+# closed, so a forgotten shell parked in a worktree would otherwise pin it
+# forever. Anything a shell is running (claude, an editor, a dev server, go
+# test) is its own process with its own cwd, so it still counts.
+_cw_cwds() {
+  lsof -d cwd -Fcn 2>/dev/null | awk '
+    /^c/ { c = substr($0, 2); sub(/^-/, "", c) }
+    /^n/ && c !~ /^(zsh|bash|fish|sh)$/ { print substr($0, 2) }'
+}
 
 # _cw_in_use <dir> [cwd-list]  — true if any process has its cwd at or under
 # <dir> (an active claude session, a shell you're sitting in, an editor, etc.).
@@ -154,6 +162,10 @@ _cw_sync() {
 #   branch doesn't exist    → create it from [base] (default: origin's default branch)
 #   CW_KEEP=1 cw <branch>   → skip cleanup (long-lived worktrees)
 #   cw foo -- "/pr-review"  → pass args to claude (e.g. start it on a skill)
+#   CW_INLINE=1 cw <branch> → run here even inside Rex (see below)
+# Inside Rex ($REX_SESSION set), cw opens the session in a new tab named
+# <repo>:<branch> via cw-tab and leaves this shell free; the tab runs cw again
+# with CW_INLINE=1 to do the real work.
 # The branch is synced to upstream before claude starts (see _cw_sync).
 # git worktree remove never deletes the branch and refuses on a dirty tree, so
 # cleanup is risk-free: committed work lives in the branch, WIP keeps the worktree.
@@ -174,6 +186,11 @@ cw() {
 
   local main_wt
   main_wt="$(git worktree list --porcelain | sed -n '1s/^worktree //p')" || return 1
+
+  if [ -n "$REX_SESSION" ] && [ -z "$CW_INLINE" ]; then
+    ~/bin/cw-tab --focus ${base:+--base "$base"} "$main_wt" "$branch" "${cargs[@]}"
+    return
+  fi
   local dir="$main_wt/.claude/worktrees/${branch//\//-}"
   # A branch can only be checked out once; if some worktree already has it
   # (e.g. an agent-* dir from Claude Code worktree isolation), use that one.
@@ -202,7 +219,13 @@ cw() {
   cd "$main_wt" || return
   cwdone "$dir"
   # 2 means the tree was dirty and the worktree survives — put you back in it.
-  [ $? -eq 2 ] && cd "$dir"
+  # Return 0 for that and for a clean teardown, so cw-tab closes the pane; only
+  # a real cwdone error (1) holds it open.
+  case $? in
+    0) return 0 ;;
+    2) cd "$dir"; return 0 ;;
+    *) return 1 ;;
+  esac
 }
 
 # cwdone [-f] [branch|dir]  — tear down one worktree you are finished with,
