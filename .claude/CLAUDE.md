@@ -28,3 +28,7 @@ If the disk fills up (symptoms: "no space left on device", Docker/OrbStack dying
 ## Subagents
 
 If you are using the Fable model, use Opus for coding subagents unless instructed otherwise.
+
+## Tools
+
+If I provide a link to a Tweet (x.com), use Chrome to view it (WebFetch won't work). If I'm not logged in, ask me to log in.
